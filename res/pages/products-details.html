@@ -1,0 +1,389 @@
+<!-- Product Details Page (product.html) -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Product Details</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/res/css/products-details.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
+        crossorigin="anonymous">
+    <!--added a cdn link by searching font awesome4 cdn and getting this link from https://www.bootstrapcdn.com/fontawesome/ this url*/-->
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.2/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+</head>
+
+<body>
+    <div id="loader">
+        <!-- <img src="/res/images/gif shoco.gif" alt="Loading..." /> -->
+    </div>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="index.html">
+                    <img src="/res/images/Free Simple Modern Circle Design Studio Logo (3).png" alt="error"
+                        width="100px">
+                </a>
+            </div>
+            <div class="list-item">
+                <ul>
+                    <li class="nav-item">
+                        <a href="/res/pages/index.html"><i class="fa-solid fa-house"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/res/pages/products.html"><i class="fa-brands fa-product-hunt"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/res/pages/usersection.html"><i class="fa-solid fa-user"></i>
+                            <span id="userEmail" class="username">guest</span>
+                        </a>
+                    </li>
+                    <li class="nav-item cart-item ">
+                        <a id="cartButton" href="/res/pages/cart.html" class="btn btn-dark cart-button">
+                            <i class="fas fa-shopping-cart fa-lg">
+                                <span id="cartItemCount" class="cart-item-count badge badge-dark">0</span>
+                            </i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+    </header>
+    <!-- Popup cart -->
+    <div id="popupCart" class="popup-cart">
+        <img src="" alt="Product Image" style="border-radius: 10%;">
+        <span class="checkmark mx-3"> <i class="fas fa-check fa-2x"></i> </span>
+        <h3>Product Added to Cart</h3>
+        <p class="product-name"></p>
+
+    </div>
+
+    <br><br>
+
+    <div class="container">
+        <div id="productDetails" class="product-details row">
+        </div>
+
+    </div>
+
+    <div class="container mt-5">
+
+        <div id="recommendedCarousel" class="carousel slide" data-ride="carousel" data-interval="2000">
+            <h2 class="first-heading2">You might also like</h2>
+            <br>
+            <div class="carousel-inner" role="listbox"></div>
+        </div>
+    </div>
+
+
+
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
+        import { getDatabase, ref, onValue, set, get } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
+
+        // Initialize Firebase App
+        const firebaseConfig = {
+            apiKey: "AIzaSyBAROjb_hDFU7eOw_Es0oUkQSngnoL3M2k",
+            authDomain: "project-store-uni.firebaseapp.com",
+            projectId: "project-store-uni",
+            storageBucket: "project-store-uni.appspot.com",
+            messagingSenderId: "733337078593",
+            appId: "1:733337078593:web:ff198355dd0b192b952fc0",
+            measurementId: "G-RG7MSM6SST",
+            databaseURL: "https://project-store-uni-default-rtdb.firebaseio.com/"
+        };
+        initializeApp(firebaseConfig);
+
+
+
+
+
+        // Initialize Firebase Auth and Realtime Database
+        const auth = getAuth();
+        const db = getDatabase();
+
+
+        // Navbar elements
+        const navbarUserEmail = document.getElementById('userEmail');
+        const navbarCartCount = document.getElementById('cartItemCount');
+
+        // Listen for auth state changes
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                // User is signed in
+                const userId = user.uid;
+                const ordersRef = ref(db, `orders/${userId}`);
+
+                // Fetch the number of items in the cart
+                fetchCartItemCount(ordersRef).then(count => {
+                    // Update the cart item count badge
+                    navbarCartCount.textContent = count;
+                });
+
+                // Update the user email
+                navbarUserEmail.textContent = user.displayName || user.email;
+            } else {
+                // User is signed out
+                navbarUserEmail.textContent = 'guest';
+                navbarCartCount.textContent = '0';
+            }
+        });
+
+        // Fetch the number of items in the cart
+        function fetchCartItemCount(ordersRef) {
+            return get(ordersRef).then(snapshot => {
+                let count = 0;
+                snapshot.forEach(orderSnapshot => {
+                    const order = orderSnapshot.val();
+                    // Only count the order if its status is "incart"
+                    if (order.orderStatus === 'incart') {
+                        count++;
+                    }
+                });
+                return count;
+            });
+        }
+
+
+        // Get product name from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const productName = urlParams.get('name');
+
+        // Fetch product details
+        const productRef = ref(db, 'shoes/' + productName);
+        onValue(productRef, (snapshot) => {
+            const product = snapshot.val();
+
+
+            // RECOMMENDATION SYSTEM CODE HERE ------------------------------
+            async function loadProducts(brand, carouselId,) {
+                const carouselInner = document.getElementById(carouselId).querySelector('.carousel-inner');
+                document.getElementById('recommendedCarousel').style.display = 'block';
+
+
+                carouselInner.innerHTML = '<div class="loader"><div class="shoe"></div><div class="shoe"></div><div class="shoe"></div></div>';
+
+                const shoesRef = ref(db, 'shoes');
+                let products = [];
+                onValue(shoesRef, (snapshot) => {
+                    snapshot.forEach((childSnapshot) => {
+                        const product = childSnapshot.val();
+                        if (product.Brand === brand) {
+                            products.push(product);
+                        }
+                    });
+                    products.sort(() => Math.random() - 0.5);
+                    products = products.slice(0, 4);
+                    carouselInner.innerHTML = '';
+
+                    const carouselItem = document.createElement('div');
+                    carouselItem.classList.add('carousel-item');
+                    carouselItem.classList.add('active');
+
+                    const cardGroup = document.createElement('div');
+                    cardGroup.classList.add('card-group');
+
+                    for (let i = 0; i < products.length; i++) {
+                        const product = products[i];
+                        const productElement = document.createElement('div');
+                        productElement.classList.add('card', 'animate-card');
+                        productElement.innerHTML = `
+                       
+                            <a href="/res/pages/products-details.html?name=${encodeURIComponent(product.Name)}" class="card">
+          <img src="${product['Img URL']}" class="card-img-top rounded" alt="${product.Name}">
+                            
+       
+          <div class="card-body">
+            <h5 class="card-title">${product.Name}</h5>
+            <p class="card-text">${product.Brand}</p>
+            <p class="card-text mrp">₹${product.MRP}</p>
+            <p class="card-text price">₹${product.Price}</p>
+          </div>
+        </a>
+      `;
+                        cardGroup.appendChild(productElement);
+                    }
+
+                    carouselItem.appendChild(cardGroup);
+                    carouselInner.appendChild(carouselItem);
+                });
+            }
+
+
+
+
+
+            // Fetch the address of the currently signed-in user
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    const userRef = ref(db, 'users/' + user.uid);
+                    let address = '';
+                    onValue(userRef, (snapshot) => {
+                        address = snapshot.val().address;
+                    });
+
+                    // Display the product details
+                    const productDetails = document.getElementById('productDetails');
+                    let colorOptions = '';
+                    const colors = product.Colors.split(', ');
+                    for (const color of colors) {
+                        colorOptions += `<option value="${color}">${color}</option>`;
+                    }
+                    productDetails.innerHTML = `
+                        <div class="col-md-6">
+                            <img src="${product['Img URL']}" alt="${product.Name}" class="img-fluid">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="product-detail">
+                               
+                                <h1>${product.Name}</h1>
+                                <p>Brand: ${product.Brand}  Unisex Shoes</p> 
+                                <div class="prize">
+                                    <p>MRP:  ₹${product.MRP}</p>
+                                    <p>Price: ₹${product.Price}.00</p>
+                                 </div>
+                              
+                                <span>incl. of taxes</span>
+                             </div>
+                             <div class="color-section">
+                                 <label for="color">Color:</label>
+                                <select id="color" name="color">
+                                    ${colorOptions}
+                                </select>
+
+                                <p id="selectedColorDisplay"></p>
+
+                               
+                                <label for="quantity">Quantity:</label>
+                                <input type="number" id="quantity" name="quantity" min="1" value="1" max="2">
+                            </div>
+                            <div class="size-section">                                
+                                <div class="button-section" id="sizeButtons">
+                                    <button class="size-btn">UK 5.5</button>
+                                    <button class="size-btn">UK 6</button>
+                                    <button class="size-btn">UK 6.5</button>
+                                    <button class="size-btn">UK 7</button>
+                                    <button class="size-btn">UK 7.5</button>
+                                    <button class="size-btn">UK 8</button>
+                                    <button class="size-btn">UK 8.5</button>
+                                    <button class="size-btn">UK 9</button>
+                                    <button class="size-btn">UK 9.5</button>
+                                    <button class="size-btn">UK 10</button>
+                                </div>
+                                <p id="selectedSizeDisplay"></p>
+                              
+                             </div>
+                             <div class="add-card">
+                                <div class="h5"> 
+                                    <h5 id="addToCart" class="btn btn-primary">Add to Cart</h5>
+                                </div>
+                               <div class="green"></div>
+                            </div>
+                        </div>
+                    `
+
+                    loadProducts(product.Brand, 'recommendedCarousel');
+
+                    // --------------Size funcionality ans showing ---------------------
+
+                    let selectedSize = '';
+                    const sizeButtons = document.querySelectorAll('.size-btn');
+                    for (const btn of sizeButtons) {
+                        btn.addEventListener('click', () => {
+
+                            sizeButtons.forEach(button => button.classList.remove('selected'));
+
+
+                            btn.classList.add('selected');
+
+                            selectedSize = btn.textContent;
+                            document.getElementById('selectedSizeDisplay').textContent = "Selected size: " + selectedSize;
+
+
+                        });
+                    }
+
+
+
+
+
+                    // Add product to cart when "Add to Cart" button is clicked
+                    document.getElementById('addToCart').addEventListener('click', () => {
+                        if (!selectedSize) {
+                            alert('Please select a size before proceeding.');
+                            return;
+                        }
+
+                        const quantity = document.getElementById('quantity').value;
+                        if (quantity > 2) {
+                            alert('Sorry, the product is limited to a maximum of 2 quantity per customer.');
+                            quantity = 1;
+                            
+                            return;
+                        }
+                        const selectedColor = document.getElementById('color').value;
+                        document.getElementById('selectedColorDisplay').textContent = "Selected color: " + selectedColor;
+
+
+
+
+                        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                        const cartItem = cart.find(item => item.Name === product.Name);
+                        if (cartItem) {
+                            cartItem.quantity += parseInt(quantity);
+                        } else {
+                            cart.push({ ...product, quantity: parseInt(quantity) });
+                        }
+                        localStorage.setItem('cart', JSON.stringify(cart));
+                        // Create a new order in the 'orders' collection
+                        const orderId = Math.random().toString(36).substring(2);
+                        const productName = document.getElementById('productDetails').querySelector('h1').textContent; // Moved this line up
+                        const orderRef = ref(db, 'orders/' + user.uid + "/" + productName);
+                        set(orderRef, {
+                            cid: user.uid,
+                            pimg: product['Img URL'],
+                            orderId: orderId,
+                            itemName: product.Name,
+                            itemQuantity: quantity > 2 ? 1 : quantity,
+                            orderStatus: 'incart',
+                            totalAmount: product.Price * quantity,
+                            customerAddress: address,
+                            colors: selectedColor,
+                            size: selectedSize,
+                            timeCreated: new Date().toISOString()
+                        });
+
+                        // Show the popup cart
+                        const popupCart = document.getElementById('popupCart');
+                        const productImage = document.getElementById('productDetails').querySelector('img').src;
+                        popupCart.querySelector('img').src = productImage;
+                        popupCart.querySelector('.product-name').textContent = productName;
+                        popupCart.style.display = 'block';
+
+                        // Hide the popup cart afareter a few seconds (adjust timing as needed)
+                        setTimeout(() => {
+                            popupCart.style.display = 'none';
+                        }, 3000);
+                    });
+                }
+            });
+        });
+        var loader = document.getElementById("loader");
+        window.addEventListener("load", function () {
+            loader.style.display = "none";
+        });
+
+    </script>
+
+
+
+
+</body>
+
+</html>

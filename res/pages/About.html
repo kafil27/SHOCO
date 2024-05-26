@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>About Page</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.2/css/all.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <style>
+
+header {
+    background-color: black;
+    height: 80px;
+}
+
+header {
+    background-color: black;
+    height: 80px;
+}
+
+nav {
+    background-color: #000;
+    /* Black background */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    /* Padding around */
+    align-items: center;
+
+}
+
+.nav-item a {
+    color: #fff;
+    /* White color icons */
+    text-decoration: none;
+    transition: all 0.3s ease;
+    /* Animation */
+}
+
+.nav-item a:hover {
+    color: #f3f04d;
+    /* Change the color to tomato on hover */
+}
+
+
+
+
+/* Cart Item Count */
+.cart-item-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 10px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: transparent;
+    color: white;
+    text-align: center;
+}
+
+/* Logo */
+.logo img {
+    transition: all 0.3s ease;
+    /* Animation */
+}
+
+.logo img:hover {
+    transform: scale(1.1);
+    /* Logo gets slightly bigger when hovered */
+}
+
+nav .list-item ul {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    list-style: none;
+}
+
+.list-item ul li a {
+    color: white;
+    /* font-size: 16px; */
+    /* font-weight: bold; */
+    font-family: sans-serif;
+    text-decoration: none;
+}
+    body {
+      background-color: #000000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .card {
+      position: relative;
+      border: 3px solid #00ff00;
+      animation: glow 2s ease-in-out infinite alternate;
+      height: 500px;
+      /* Adjust as needed */
+      margin: 20px;
+      padding: 20px;
+      color: white;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('profile.jpg') no-repeat center center/cover;
+      opacity: 0.7;
+      z-index: -1;
+    }
+
+    .card-title {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .card-text {
+      font-size: 18px;
+      font-weight: lighter;
+    }
+
+    @keyframes glow {
+      from {
+        box-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
+      }
+
+      to {
+        box-shadow: 0 0 10px #00ff00, 0 0 15px #00ff00;
+      }
+    }
+  </style>
+</head>
+
+<body>
+ 
+  <div class="container">
+    <div class="row justify-content-center">
+      <!-- Card 1 -->
+      <div class="col-md-6">
+        <div class="card">
+          <img src="https://avatars.githubusercontent.com/u/71204966?v=4" class="card-img-top" alt="Profile 1">
+          <div class="card-body">
+            <br>  
+            <br>
+            <h5 class="card-title">Mohd. Kafil khan</h5>
+            <p class="card-text">GitHub ID: kafil27</p>
+            <p class="card-text">Bio:me/myself</p>
+            <p class="card-text">DOB: 27/03/2002</p>
+            <p class="card-text">Roll No: MU21BTCSH007</p>
+            <p class="card-text">Contact: Kafilkhan1271@gmail.com</p>
+          </div>
+        </div>
+      </div>
+      <!-- Card 2 -->
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Name 2</h5>
+            <p class="card-text">GitHub ID: id2</p>
+            <p class="card-text">DOB: dob2</p>
+            <p class="card-text">Roll No: roll2</p>
+            <p class="card-text">Contact No: contact2</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+  <script>
+    gsap.from('.card', { duration: 1, scale: 0.5, opacity: 0, delay: 0.5 });
+     // Import Firebase modules
+     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
+    import { getDatabase, ref, onValue, set, get } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
+
+    // Initialize Firebase App
+    const firebaseConfig = {
+      apiKey: "AIzaSyBAROjb_hDFU7eOw_Es0oUkQSngnoL3M2k",
+      authDomain: "project-store-uni.firebaseapp.com",
+      projectId: "project-store-uni",
+      storageBucket: "project-store-uni.appspot.com",
+      messagingSenderId: "733337078593",
+      appId: "1:733337078593:web:ff198355dd0b192b952fc0",
+      measurementId: "G-RG7MSM6SST",
+      databaseURL: "https://project-store-uni-default-rtdb.firebaseio.com/"
+    };
+    initializeApp(firebaseConfig);
+
+    // Initialize Firebase Auth and Realtime Database
+    const auth = getAuth();
+    const db = getDatabase();
+
+
+    // Navbar elements
+    const navbarUserEmail = document.getElementById('userEmail');
+    const navbarCartCount = document.getElementById('cartItemCount');
+
+    // Listen for auth state changes
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        // User is signed in
+        const userId = user.uid;
+        const ordersRef = ref(db, `orders/${userId}`);
+
+        // Fetch the number of items in the cart
+        fetchCartItemCount(ordersRef).then(count => {
+          // Update the cart item count badge
+          navbarCartCount.textContent = count;
+        });
+
+        // Update the user email
+        navbarUserEmail.textContent = user.displayName || user.email;
+      } else {
+        // User is signed out
+        navbarUserEmail.textContent = 'guest';
+        navbarCartCount.textContent = '0';
+      }
+    });
+
+    // Fetch the number of items in the cart
+    function fetchCartItemCount(ordersRef) {
+      return get(ordersRef).then(snapshot => {
+        let count = 0;
+        snapshot.forEach(orderSnapshot => {
+          const order = orderSnapshot.val();
+          // Only count the order if its status is "incart"
+          if (order.orderStatus === 'incart') {
+            count++;
+          }
+        });
+        return count;
+      });
+    }
+  </script>
+</body>
+
+</html>

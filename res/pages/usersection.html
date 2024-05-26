@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Account</title>
+    <link rel="stylesheet" href="/res/css/usersection.css" />
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+
+
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
+        import { getDatabase, ref, set, get, update } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
+
+        // Initialize Firebase App
+        const firebaseConfig = {
+            apiKey: "AIzaSyBAROjb_hDFU7eOw_Es0oUkQSngnoL3M2k",
+            authDomain: "project-store-uni.firebaseapp.com",
+            projectId: "project-store-uni",
+            storageBucket: "project-store-uni.appspot.com",
+            messagingSenderId: "733337078593",
+            appId: "1:733337078593:web:ff198355dd0b192b952fc0",
+            measurementId: "G-RG7MSM6SST",
+            databaseURL: "https://project-store-uni-default-rtdb.firebaseio.com/"
+        };
+        initializeApp(firebaseConfig);
+
+        // Initialize Firebase Auth and Realtime Database
+        const auth = getAuth();
+        const db = getDatabase();
+
+        // Function to fetch and display user data
+        function fetchUserData(uid) {
+            const userRef = ref(db, 'users/' + uid);
+            get(userRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    document.getElementById('userFullName').textContent = userData.fullName;
+                    document.getElementById('userEmail').textContent = userData.email;
+                    document.getElementById('userDob').textContent = userData.dob;
+                    document.getElementById('userAddress').textContent = userData.address;
+                    const userAvatar = document.getElementById('userAvatar');
+                    userAvatar.src = userData.profileAvatarLink;
+                    userAvatar.onerror = function () {
+                        userAvatar.src = 'https://www.transparentpng.com/thumb/user/gray-user-profile-icon-png-fP8Q1P.png';
+                    };
+                    // Hide loading animation and show account details
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('account-details-container').style.display = 'block';
+                } else {
+                    console.log('No such document!');
+                }
+            }).catch((error) => {
+                console.error('Error fetching user data:', error);
+            });
+        }
+
+        // Listen for auth state changes
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                fetchUserData(user.uid);
+            } else {
+                // User is not signed in, hide loading animation and show "Not Signed In" image
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('notSignedIn').style.display = 'block';
+                // User is signed out
+            }
+        });
+
+        // Edit user information
+        document.getElementById('editUserInfo').addEventListener('click', () => {
+            document.querySelector('.user-info').classList.add('hidden');
+            document.querySelector('.edit-user-info').classList.remove('hidden');
+        });
+
+        // Save the user info
+        document.getElementById('saveUserInfo').addEventListener('click', () => {
+            const user = auth.currentUser;
+            const fullName = document.getElementById('editFullName').value;
+            const address = document.getElementById('editAddress').value;
+            const avatar = document.getElementById('editAvatar').value;
+
+            // Basic URL validation (check for valid protocol and domain)
+            if (!isValidUrl(avatar)) {
+                alert('Please enter a valid URL for your avatar.');
+                return;
+            }
+
+            const userRef = ref(db, 'users/' + user.uid);
+            update(userRef, {
+                fullName: fullName,
+                address: address,
+                profileAvatarLink: avatar
+            }).then(() => {
+                console.log('Document successfully updated!');
+                fetchUserData(user.uid); // Refresh user data
+                document.querySelector('.edit-user-info').classList.add('hidden');
+                document.querySelector('.user-info').classList.remove('hidden');
+            }).catch((error) => {
+                console.error('Error updating document:', error);
+                alert('Error saving changes. Please try again.');
+            });
+        });
+
+        // Sign out function using Firebase Authentication
+        // Sign out function using Firebase Authentication
+        document.getElementById('logoutButton').addEventListener('click', function (event) {
+            event.preventDefault();
+            signOut(auth).then(() => {
+                console.log('User signed out successfully');
+                // Redirect to the homepage after successful logout
+                window.location.href = this.href;
+            }).catch((error) => {
+                console.error('Logout failed:', error);
+                // Handle potential errors during sign out (optional)
+            });
+        });
+
+        function isValidUrl(url) {
+            const regex = /^(http|https):\/\/[^ "]+$/;
+            return regex.test(url);
+        }
+    </script>
+
+    <div id="loading" class="text-center">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <div id="notSignedIn" class="text-center" style="display: none;">
+        <img src="/res/images/signin.jpg" alt="Not Signed In" class="img-fluid" style="width: 25%; height: 25%;   align-content: center;
+        align-items: center; margin-top: 10%; ">
+        <p>You are not signed in. Please sign in to view your account details.</p>
+    </div>
+
+
+    <div id="account-details-container" class="account-details-container" style="display: none;">
+        <header>
+            <nav style="display: flex;">
+                
+                <div class="logo">
+                    <a href="index.html">
+                        <img src="/res/images/Free Simple Modern Circle Design Studio Logo (3).png" alt="error"
+                            width="100px">
+                    </a>
+                </div>
+                <div class="list-item">
+                    <ul>
+                        <li> <a href="/res/pages/index.html"><i class="fa-solid fa-house" style="color: #ffffff;"></i></a></li>
+                    <li><a href="/res/pages/products.html"><i class="fa-brands fa-product-hunt" style="color: #ffffff;"></i>
+                
+                   <!-- <li><a href="/res/pages/usersection.html"><i class="fa-solid fa-user" style="color: #ffffff;"></i></a></li> -->
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <main class="first-main">
+            <section id="first-section">
+                <div class="user-info">
+                    <img id="userAvatar" src="" alt="User Avatar" class="user-avatar" height="100%" width="100%" style="margin-top: 40px; border-radius: 100px;">
+
+                    <div class="list-item2">
+                        <h3 style="margin-bottom: 37px; font-size: 20px; margin-top: 40px;"><a href="/res/pages/admin.html">ADMIN PAGE</a></h3>
+                        
+                        <h3 style="margin-bottom: 37px; font-size: 20px;"><a href="/res/pages/merchantrequest.html">BECOME A MERCHANT</a></h3>
+                        <!-- <h3 style="margin-bottom: 37px; font-size: 20px;"><a href="/res/pages/authentication.html">LOGIN ANOTHER ACCOUNT</a></h3> -->
+                    </div>
+                </div>
+            </section>
+            <section class="second-section">
+                <h1 style="margin: 45px 81px 0px 70px;">Personal Information</h1>
+                <div class="informaion" style="    margin: 48px 34px 61px 51px;">
+                    <p><strong>NAME</strong><span id="userFullName"></span></p>
+                    <p><strong>Email</strong><span id="userEmail"></span></p>
+                    <p><strong>D.O.B :</strong> <span id="userDob"></span></p>
+                    <p><strong>Address:</strong> <span id="userAddress"></span></p>
+                </div>
+
+                <div class="logout-section">
+                    <button id="editUserInfo" class="btn btn-primary" style="color: white;
+                    background: black;
+                    width: 192px;
+                    height: 48px;
+                    border-radius: 10px;"> <i class="bi bi-pencil-square"></i> Edit
+                        Information</button>
+                    <a id="logoutButton" href="/res/pages/authentication.html" class="btn btn-danger" style="    color: #fff;
+                    background-color: #dc3545;
+                    border-color: #dc3545;
+                    width: 140px;
+                    height: 45px;
+                    border-radius: 10px;
+                    font-size: 18px;">
+                        <i class="bi bi-box-arrow-right"></i> Logout</a>
+
+                </div>
+                <div class="edit-user-info hidden">
+                    <input type="text" id="editFullName" placeholder="Full Name">
+                    <input type="text" id="editAddress" placeholder="Address">
+                    <input type="url" id="editAvatar" placeholder="Avatar URL">
+                    <button id="saveUserInfo" class="btn btn-success">Save Changes</button>
+                </div>
+            </section>
+        </main>
+
+
+        <div class="about">
+
+            <div id="first">
+
+                <div class="first-content">
+                    <p style="margin-top: 12px; margin-bottom: 0%;"><span id="userFullName"></span></p>
+
+                </div>
+            </div>
+
+
+
+
+
+
+        </div>
+
+        <!-- Logout Section -->
+
+    </div>
+
+
+
+</body>
+
+</html>

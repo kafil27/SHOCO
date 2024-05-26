@@ -1,0 +1,428 @@
+/* styles.css */
+
+@keyframes gradient {
+    0% {
+        background-position: 0%;
+    }
+
+    100% {
+        background-position: 100%;
+    }
+}
+.size-btn.selected {
+    background-color: #8b8786;
+    color: white;
+    font-weight: bold;
+ 
+}
+
+#recommendedCarousel {
+    display: none;
+  }
+  
+
+
+.carousel {
+    outline: none;
+    /* Remove the outline */
+}
+.animate-card{
+    border: none !important;
+}
+.animate-card:hover{
+    border: none !important;
+    transition: none !important;
+}
+
+
+/* #loader {
+    background: black url("https://media.giphy.com/media/N256GFy1u6M6Y/giphy.gif") no-repeat center center;
+    height: 100vh;
+    width: 100%;
+    position: fixed;
+    z-index: 100;
+    background-size: 10%;
+    display: hidden;
+} */
+.cart-item-count {
+    position: absolute;
+    top: -5px;
+    /* Adjust vertical position as needed */
+    right: -5px;
+    /* Adjust horizontal position as needed */
+    font-size: 10px;
+    /* Adjust font size as desired */
+    width: 16px;
+    /* Adjust width to fit number of digits */
+    height: 16px;
+    /* Adjust height to match font size */
+    border-radius: 50%;
+    background-color: transparent;
+    /* Change color as desired */
+    color: white;
+    /* Change text color as desired */
+    text-align: center;
+    /* Center the number within the badge */
+}
+
+
+body {
+    margin: 0%;
+    padding: 0%;
+    line-height: normal;
+    height: auto;
+    width: auto;
+
+}
+
+.checkmark {
+    width: auto;
+    height: auto;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.checkmark i {
+    color: green;
+    /* Change color as desired */
+    animation: checkmark 0.5s ease-in-out forwards;
+}
+
+@keyframes checkmark {
+    0% {
+        opacity: 0;
+        transform: scale(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+/* Add custom styles for the popup cart */
+.popup-cart {
+    position: absolute;
+    z-index: 100;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: none;
+}
+
+.col-md-6 {
+    margin-top: 40px;
+}
+
+.popup-cart img {
+    max-width: 100px;
+}
+
+.popup-cart .checkmark {
+    color: green;
+    font-size: 24px;
+}
+
+
+.img-fluid {
+    max-width: 100%;
+    /* height: auto; */
+    height: 550px;
+    border-radius: 22px;
+    width: 95%;
+}
+
+/* .btn-primary:hover {
+    background-color: white;
+    color: black;
+    font-weight: bold;
+    border: 2px solid black;
+
+} */
+
+
+/* .product-card:hover,
+.product-details:hover,
+.cart-item:hover {
+    transform: scale(1.05);
+} */
+
+.product-grid,
+.cart-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Add styles for the "Add to Cart" button */
+#addToCart {
+    z-index: 99;
+    position: relative;
+    background: none;
+    /* background-color: rgb(255, 255, 255); */
+    font-size: 22px;
+    width: 100%;
+    height: 100%;
+    font-weight: bold;
+
+    border: none;
+    color: black;
+}
+
+#addToCart:hover {
+    color: white;
+}
+
+.green {
+    width: 100%;
+    transition: left 1s ease;
+    height: 100%;
+    background-color: rgb(0, 0, 0);
+    position: absolute;
+    top: 0%;
+    left: -100%;
+    /* border-radius: 22px; */
+}
+
+.add-card:hover .green {
+    left: 0;
+}
+
+.add-card {
+    position: relative;
+    overflow: hidden;
+    height: 50px;
+    width: 27vw;
+    border-radius: 22px;
+    border: 2px solid black;
+}
+
+.size-section button {
+    border: 2px solid rgba(117, 117, 117, 0.444);
+    width: 80px;
+    height: 44px;
+    border-radius: 8px;
+    margin-right: 23px;
+    background-color: white;
+    margin-bottom: 18px;
+}
+
+.size-section {
+    margin-top: 35px;
+    margin-bottom: 32px;
+    max-width: 426px;
+}
+
+.product-detail :nth-child(2) {
+    color: #877472;
+}
+
+/* .product-detail :nth-child(4){
+    color: #877472;
+    text-decoration: line-through;
+} */
+
+.product-detail .prize :nth-child(2) {
+    color: rgb(0, 0, 0);
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.product-detail .prize :nth-child(1) {
+    text-decoration-line: line-through;
+    color: #877472;
+}
+
+.prize {
+    line-height: 16px;
+}
+
+.span {
+    display: flex;
+    justify-content: space-between;
+}
+
+.span :nth-child(2) {
+    margin-right: 22px;
+}
+
+.color-section {
+    margin-top: 12px
+}
+
+header {
+    background-color: black;
+    height: 80px;
+}
+
+nav {
+    background-color: #000;
+    /* Black background */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    /* Padding around */
+    align-items: center;
+
+}
+
+.nav-item a {
+    color: #fff;
+    /* White color icons */
+    text-decoration: none;
+    transition: all 0.3s ease;
+    /* Animation */
+}
+
+.nav-item a:hover {
+    color: #f3f04d;
+    /* Change the color to tomato on hover */
+}
+
+
+
+
+/* Cart Item Count */
+.cart-item-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 10px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: transparent;
+    color: white;
+    text-align: center;
+}
+
+/* Logo */
+.logo img {
+    transition: all 0.3s ease;
+    /* Animation */
+}
+
+.logo img:hover {
+    transform: scale(1.1);
+    /* Logo gets slightly bigger when hovered */
+}
+
+nav .list-item ul {
+    
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    list-style: none;
+}
+
+.list-item ul li a {
+    color: white;
+    /* font-size: 16px; */
+    /* font-weight: bold; */
+    font-family: sans-serif;
+    text-decoration: none;
+}
+
+.card {
+    width: 15rem;
+    /* Reduce the width of the card */
+    margin: 2rem;
+    /* Increase margin around the card */
+
+    /* Add transition for hover effect */
+}
+.card-body{
+    text-decoration: none;
+    color: black !important;
+}
+.card-body:hover{
+    text-decoration: none;
+    color: #000 !important;
+
+}
+
+
+.card:hover {
+    text-decoration: none;
+    color: black;
+}
+.card{
+    text-decoration: none;
+    border: none;
+}
+
+.card-group {
+    flex-direction: row;
+    /* Align cards horizontally */
+    justify-content: space-around;
+    /* Add space around cards */
+}
+
+.card-img-top {
+    border-radius: 10%;
+    /* Add border radius to image */
+}
+
+.card-title {
+    font-weight: bold;
+    /* Make product name bold */
+}
+
+.card-text.mrp {
+    text-decoration: line-through;
+    /* Add line through to MRP */
+}
+
+.card-text.price {
+    font-weight: bold;
+    /* Make price bold */
+    font-size: 1.2em;
+    /* Increase price font size */
+}
+
+
+
+.card-img img {
+    height: 100%;
+    width: 100%;
+}
+
+.Favourites-shoes {
+    display: flex;
+    gap: 30px;
+    max-width: 80vw;
+    margin: auto;
+}
+
+.heading {
+    margin-top: 32px;
+    margin-bottom: 32px;
+    margin-left: 165px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+a {
+    color: black;
+    text-decoration: none;
+}
+
+a:hover {
+    color: black;
+    text-decoration: none;
+}

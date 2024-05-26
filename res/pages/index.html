@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>ShoCo - Buy Shoes</title>
+  <link rel="icon" type="image/x-icon" href="/res/images/Free Simple Modern Circle Design Studio Logo (1).png">
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <link rel="stylesheet" href="/res/css/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+    integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <!--added a cdn link by searching font awesome4 cdn and getting this link from https://www.bootstrapcdn.com/fontawesome/ this url*/-->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/̥.7.0/css/font-awesome.min.css" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Roboto+Slab:wght@100..900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"
+    integrity="sha512-cOH8ndwGgPo+K7pTvMrqYbmI8u8k6Sho3js0gOqVWTmQMlLIi6TbqGWRTpf1ga8ci9H3iPsvDLr4X7xwhC/+DQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"
+    integrity="sha512-AMl4wfwAmDM1lsQvVBBRHYENn1FR8cfOTpt8QVbb/P55mYOdahHD4LmHM1W55pNe3j/3od8ELzPf/8eNkkjISQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"
+    integrity="sha512-cOH8ndwGgPo+K7pTvMrqYbmI8u8k6Sho3js0gOqVWTmQMlLIi6TbqGWRTpf1ga8ci9H3iPsvDLr4X7xwhC/+DQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"
+    integrity="sha512-AMl4wfwAmDM1lsQvVBBRHYENn1FR8cfOTpt8QVbb/P55mYOdahHD4LmHM1W55pNe3j/3od8ELzPf/8eNkkjISQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+
+</head>
+
+<!-- Firebase Section -->
+
+<script type="module">
+  // Import Firebase modules
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
+  import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
+  import { getDatabase, ref, get, onValue } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
+
+  // Initialize Firebase App
+  const firebaseConfig = {
+    apiKey: "AIzaSyBAROjb_hDFU7eOw_Es0oUkQSngnoL3M2k",
+    authDomain: "project-store-uni.firebaseapp.com",
+    projectId: "project-store-uni",
+    storageBucket: "project-store-uni.appspot.com",
+    messagingSenderId: "733337078593",
+    appId: "1:733337078593:web:ff198355dd0b192b952fc0",
+    measurementId: "G-RG7MSM6SST",
+    databaseURL: "https://project-store-uni-default-rtdb.firebaseio.com/"
+  };
+  initializeApp(firebaseConfig);
+
+  // Initialize Firebase Auth and Realtime Database
+  const auth = getAuth();
+  const db = getDatabase();
+
+  const userNavItem = document.getElementById('userNavItem');
+  const userEmailSpan = document.getElementById('userEmail');
+  const adminPanelNavItem = document.getElementById('adminPanelNavItem');
+
+
+
+
+  // Get the modal
+  var modal = document.getElementById("myModal");
+
+  // Get the <span> element that closes the modal
+  var span = document.getElementsByClassName("close")[0];
+
+  // When the user clicks on <span> (x), close the modal
+  span.onclick = function () {
+    modal.style.display = "none";
+  }
+
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
+
+  window.onload = function () {
+    if (!navigator.onLine) {
+      // Show the modal if the user is offline
+      document.getElementById('internetModal').style.display = "block";
+
+    }
+    // function---------call----------------->
+
+  };
+  // window.onload = function () {
+  //   var genders = document.querySelectorAll('.selection-gender');
+  //   genders.forEach(function (gender) {
+  //     gender.addEventListener('click', function () {
+  //       window.location.href = '/res/pages/products.html?gender=' + this.id;
+  //     });
+  //   });
+  // };
+
+
+
+  // Cart items 
+
+  onAuthStateChanged(auth, (user) => {
+
+    if (user) {
+      const userId = user.uid;
+      const ordersRef = ref(db, `orders/${userId}`);
+
+      // Fetch the number of items in the cart
+      fetchCartItemCount(ordersRef).then((count) => {
+        // Update the cart item count badge
+        document.getElementById('cartItemCount').textContent = count;
+        // Store the cart item count in localStorage
+        localStorage.setItem('cartItemCount', count);
+
+      });
+      // Store the user details in localStorage
+      localStorage.setItem('userEmail', user.displayName || user.email);
+    }
+  });
+
+  // Fetch the number of items in the cart
+  function fetchCartItemCount(ordersRef) {
+    return new Promise((resolve) => {
+      onValue(ordersRef, (snapshot) => {
+        let count = 0;
+        snapshot.forEach((orderSnapshot) => {
+          const order = orderSnapshot.val();
+          // Only count the order if its status is "incart"
+          if (order.orderStatus === 'incart') {
+            count++;
+          }
+        });
+        // Update the cart item count in localStorage
+        localStorage.setItem('cartItemCount', count);
+        resolve(count);
+      });
+    });
+  }
+  // Check for authentication state changes
+  onAuthStateChanged(auth, (user) => {
+    const userAuthLink = document.getElementById('userAuthLink');
+    const productsButton = document.getElementById('productsButton');
+    const cartButton = document.getElementById('cartButton');
+    const ordersButton = document.getElementById('ordersButton');
+    const merchantLink = document.getElementById('merchantLink'); // Add this line
+    const adminPanelNavItem = document.getElementById('adminPanelNavItem');
+
+
+    if (user) {
+      // User is signed in, show email
+      modal.style.display = "none";
+      userEmailSpan.textContent = user.displayName || user.email;
+      console.log(user.email + " is signed in !");
+      userAuthLink.href = "/res/pages/usersection.html";
+      // User is signed in, enable the buttons
+      productsButton.classList.remove('disabled');
+      cartButton.classList.remove('disabled');
+      ordersButton.classList.remove('disabled');
+
+      // Check if the user is an admin
+      const userRef = ref(db, 'users/' + user.uid);
+      get(userRef).then((snapshot) => {
+        if (snapshot.exists() && snapshot.val().type === 'admin') {
+          // User is an admin, show the admin panel nav item
+          adminPanelNavItem.style.display = 'block';
+          merchantLink.href = '#'; // Disable the "Become a Merchant" link
+        } else {
+          // User is not an admin, hide the admin panel nav item
+          adminPanelNavItem.style.display = 'none';
+          if (user && user.uid && user.email) {
+            merchantLink.href = '/res/pages/merchantrequest.html?uid=' + user.uid + '&email=' + encodeURIComponent(user.email); // Enable the "Become a Merchant" link with UID and email parameters
+          } else {
+            merchantLink.href = '#'; // Disable the "Become a Merchant" link
+          }
+        }
+
+      }).catch((error) => {
+        console.error("Error fetching user document:", error);
+      });
+
+    } else {
+      // No user is signed in
+      modal.style.display = "block";
+      userEmailSpan.textContent = '';
+      console.log("guest entered!");
+      userAuthLink.href = "/res/pages/authentication.html";
+      adminPanelNavItem.style.display = 'none';
+      // No user is signed in, disable the buttons
+      productsButton.classList.add('disabled');
+      cartButton.classList.add('disabled');
+      ordersButton.classList.add('disabled'); // Hide admin panel nav item for guests
+    }
+  });
+
+
+
+
+  /// JavaScript
+  async function loadProducts() {
+    const carouselInner = document.getElementById('productCarousel').querySelector('.carousel-inner');
+    // Show the loader
+    carouselInner.innerHTML = '<div class="loader"><div class="shoe"></div><div class="shoe"></div><div class="shoe"></div></div>';
+
+    const shoesRef = ref(db, 'shoes');
+    let products = [];
+    onValue(shoesRef, (snapshot) => {
+      snapshot.forEach((childSnapshot) => {
+        const product = childSnapshot.val();
+        products.push(product);
+      });
+      // Shuffle the products array
+      products.sort(() => Math.random() - 0.5);
+      // Only take the first 4-5 products
+      products = products.slice(0, 4);
+      // Clear the loader
+      carouselInner.innerHTML = '';
+      // Create a carousel item for each product
+      for (let i = 0; i < products.length; i++) {
+        const product = products[i];
+        const carouselItem = document.createElement('div');
+        carouselItem.classList.add('carousel-item');
+        if (i === 0) {
+          carouselItem.classList.add('active');
+        }
+        const productElement = document.createElement('div');
+        productElement.classList.add('card', 'animate-card');
+        productElement.innerHTML += `
+                <a href="/res/pages/products-details.html?name=${encodeURIComponent(product.Name)}" class="card">
+                    <img src="${product['Img URL']}" class="card-img-top rounded style="border-radius: 10%;" alt="${product.Name}">
+                    <div class="card-body">
+                        <h5 class="card-title">${product.Name}</h5>
+                        <p class="card-text">${product.Brand}</p>
+                        <i class="fa-solid fa-star" style="color: #f96534;"></i>
+                                <i class="fa-solid fa-star" style="color: #f96534;"></i>
+                                <i class="fa-solid fa-star" style="color: #f96534;"></i>
+                                <i class="fa-solid fa-star" style="color: #f96534;"></i>
+                                <i class="fa-solid fa-star-half-stroke" style="color: #f96534;"></i>
+                        <p class="card-text mrp">₹${product.MRP}</p>
+                        <p class="card-text price">₹${product.Price}</p>
+                    </div>
+                </a>
+            `;
+        carouselItem.appendChild(productElement);
+        carouselInner.appendChild(carouselItem);
+      }
+    });
+  }
+
+  // Call the function when the page loads
+  loadProducts();
+
+  // JavaScript
+  // Add this function to automatically scroll the carousel
+  function autoScrollCarousel() {
+    const carousel = document.getElementById('productCarousel');
+    let currentIndex = 0;
+    setInterval(() => {
+      const items = carousel.querySelectorAll('.carousel-item');
+      items.forEach((item, index) => {
+        item.classList.remove('active');
+        if (index === currentIndex) {
+          item.classList.add('active');
+        }
+      });
+      currentIndex = (currentIndex + 1) % items.length;
+    }, 2000); // Change the interval to adjust the speed of the scrolling
+  }
+
+  // Call the function when the page loads
+  autoScrollCarousel();
+
+
+
+
+  // Helper function to split an array into chunks
+  function chunk(array, size) {
+    const chunks = [];
+    for (let i = 0; i < array.length; i += size) {
+      chunks.push(array.slice(i, i + size));
+    }
+    return chunks;
+  }
+
+  // JavaScript
+  async function loadLatestProducts() {
+    const carouselInner = document.getElementById('latestCarousel').querySelector('.carousel-inner');
+    // Show the loader
+    carouselInner.innerHTML = '<div class="loader"><div class="shoe"></div><div class="shoe"></div><div class="shoe"></div></div>';
+
+    const shoesRef = ref(db, 'shoes');
+    let products = [];
+    onValue(shoesRef, (snapshot) => {
+      snapshot.forEach((childSnapshot) => {
+        const product = childSnapshot.val();
+        products.push(product);
+      });
+      // Sort the products by timeCreated in descending order
+      products.sort((a, b) => new Date(b.timeCreated) - new Date(a.timeCreated));
+      // Only take the first 10 products
+      products = products.slice(0, 10);
+      // Clear the loader
+      carouselInner.innerHTML = '';
+      // Create a carousel item for each product
+      for (let i = 0; i < products.length; i++) {
+        const product = products[i];
+        const carouselItem = document.createElement('div');
+        carouselItem.classList.add('carousel-item');
+        if (i === 0) {
+          carouselItem.classList.add('active');
+        }
+        const productElement = document.createElement('div');
+        productElement.classList.add('card');
+        productElement.innerHTML += `
+                <a href="/res/pages/products-details.html?name=${encodeURIComponent(product.Name)}" class="card">
+                    <img src="${product['Img URL']} " class="card-img-top rounded style="border-radius: 10%;"  alt="${product.Name}">
+                    <div class="card-body">
+                        <h5 class="card-title">${product.Name}</h5>
+                        <p class="card-text">${product.Brand}</p>
+                        <p class="card-text mrp">₹${product.MRP}</p>
+                        <p class="card-text price">₹${product.Price}</p>
+                    </div>
+                </a>
+            `;
+        carouselItem.appendChild(productElement);
+        carouselInner.appendChild(carouselItem);
+      }
+      // Initialize the carousel
+      $('#latestCarousel').carousel({
+        interval: 2000
+      });
+    });
+  }
+
+  // Call the function when the page loads
+  loadLatestProducts();
+
+
+
+  function animationforheader() {
+    const scroll = new LocomotiveScroll({
+      el: document.querySelector('.main'),
+      smooth: true
+    });
+
+  }
+  animationforheader();
+
+  function smoothscroller() {
+    var menuItems = document.getElementById("MenuItems");
+
+    MenuItems.style.maxHeight = "0px";
+    function menutoggle() {
+      if (MenuItems.style.maxHeight == "0px") {
+        MenuItems.style.maxHeight = "200px";
+      } else {
+        MenuItems.style.maxHeight = "0px";
+      }
+    }
+  }
+  smoothscroller();
+</script>
+
+
+
+
+
+<!---------------------------------------- Body Section------------------------------------------------------ -->
+
+<body class="main">
+  <div id="loading-page">
+    <span>S</span><span>H</span><span>O</span><span>C</span><span>O</span>
+  </div>
+  <div class="offer2" style="text-align: center; color: #ffcf01; background-color: rgb(0, 0, 0); "><span>NEW STYLES
+      AVAILABLE NOW | FREE SHIPPING ON ORDERS OVER $50</span>
+  </div>
+  <!-- <div class="header"> -->
+  <div class="container">
+    <div class="navbar">
+      <div class="logo">
+        <div class="logo-item">
+          <a href="index.html">
+            <img src="/res/images/Free Simple Modern Circle Design Studio Logo (3).png" alt="error" width="100px">
+          </a>
+        </div>
+        <div class="logo-item2">
+          <ul id="MenuItemsfirst">
+            <li><a href="/res/pages/index.html" style=" border-bottom: 2px solid #ffcf01;">Home</a></li>
+            <li><a id="productsButton" href="/res/pages/products.html">Products</a></li>
+            <li><a href="/res/pages/About.html">About</a></li>
+            <li><a href="/res/pages/contactus.html">Contact Us</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="list-item-right">
+        <nav>
+          <ul id="">
+            <li id="userNavItem" class="nav-item">
+              <div class="dropdown">
+                <button id="accountDropdownButton" class="dropdown-button">
+                  <i id="accountIcon" class="bi bi-person"></i>
+                  <span id="userEmail" class="username">guest</span> <!-- Replace with actual email-->
+                </button>
+                <div class="dropdown-content">
+                  <a id="userAuthLink" href="/res/pages/authentication.html">Your Profile</a>
+                  <a href="/res/pages/orders.html">Your Orders</a>
+                  <a id="merchantLink" href="/res/pages/merchantrequest.html">Become a Merchant</a>
+                </div>
+              </div>
+            </li>
+
+
+            <li id="adminPanelNavItem" class="nav-item hidden" style="list-style: none;">
+              <!-- Bootstrap admin icon -->
+              <a href="/res/pages/admin.html" style="display: inline-block; width: 30px; text-align: center;">
+                <i class="bi bi-person-check" style="color: aliceblue;"></i>
+              </a>
+            </li>
+
+            <li class="cart-item">
+
+              <a id="cartButton" href="/res/pages/cart.html" class="btn btn-light cart-button">
+                <!-- <i class="fas fa-shopping-cart fa-lg"> -->
+                <i class="fa-solid fa-cart-shopping" style="color: rgb(255, 238, 238);"></i>
+                <span id="cartItemCount" class="badge badge-light position-absolute"
+                  style="top: -10px; right: -10px;">0</span>
+                </i>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+
+    </div>
+    <div class="first-img">
+      <div class="first1">
+        <h3 class="first-img-h3">NEW <span style="color: #fe5047;;">ARRIVAL!</span></h3>
+        <h4 class="first-img-h4">special price up to 30% off</h4><br>
+        <button class="first-img-btn"><a href="/res/pages/products.html"
+            style="color: white; font-weight: bold;">EXPLORE NOW</a></button>
+      </div>
+    </div>
+
+    <div class="row">
+
+
+
+      <!-------------------------------------------------------- The Internet Modal ---------------->
+      <div id="internetModal" class="modal">
+
+        <!-- -----------------------------------------------------Modal content ----------------------->
+        <div class="modal-content">
+          <p>Please Check you Connection !</p>
+          <center>
+            <img src="/res/images/nointernet.jpg" alt="Offline Image" style="width:50%;height:auto;">
+
+          </center>
+        </div>
+
+
+        <!-- The Modal -->
+        <div id="myModal" class="modal">
+          <!-- Modal content -->
+          <div class="modal-content">
+            <span class="close">&times;</span>
+            <a href="/res/pages/authentication.html" class="btn btn-primary">
+              <i class="bi bi-box-arrow-in-right"></i> Sign In
+            </a>
+            <p>Sign in for a better experience!</p>
+
+            <center>
+              <img src="/res/images/signin.jpg" alt="Your Image" style="width:50%;height:auto;">
+
+            </center>
+
+
+
+
+          </div>
+        </div>
+
+
+        <div class="col-2">
+          <h1>Hello,
+            Give your Workout <br />A New Style!</h1>
+          <p>
+            Success isn't always about greatness. It's about consistency.
+            Consistent<br />hard work gains success. Greatness will come.
+          </p>
+          <a href="/res/pages/products.html" class="btn">Explore Now &#8594;</a>
+        </div>
+        <div class="col-2">
+          <img src="/res/images/shoes.png" />
+        </div>
+      </div>
+    </div>
+  </div>
+  <!------------------------------genders selection--------------------
+    -------------------------------if you are intrested to chagne the hover property and use animation you can use this --
+    ----------------------------------------------------------------------------------data-scroll data-scroll-speed="1"---->
+  <div id="main1">
+    <div id="gender" class="gender">
+      <div class="selection-gender" id="women">
+        <div class="overlay">
+          <p>Women’s</p>
+        </div>
+        <img src="/res/images/gender-women.jpg" alt="nhi aya h image">
+      </div>
+      <div class="selection-gender" id="men">
+        <div class="overlay">
+          <p>men's</p>
+        </div>
+        <img src="/res/images/gender-man.jpg" alt="error">
+      </div>
+      <div class="selection-gender" id="kids">
+        <div class="overlay">
+          <p>kid's</p>
+        </div>
+        <img src="/res/images/gender-kids.jpg" alt="chitye page reload mr">
+      </div>
+    </div>
+  </div>
+  <!------------------------------ featured categories------------------------------>
+
+  <div class="container mt-5">
+    <h2 class="first-heading2">Featured Categories</h2>
+    <div id="productCarousel" class="carousel slide" data-ride="carousel" data-interval="2000">
+      <div class="carousel-inner" role="listbox"></div>
+    </div>
+  </div>
+
+  <!------------------------------ latest products------------------------------>
+  <br>
+  <div class="container mt-5">
+    <h2 class="first-heading2">Latest Products</h2>
+    <div id="latestCarousel" class="carousel slide" data-ride="carousel" data-interval="2000">
+      <div class="carousel-inner" role="listbox"></div>
+      <a class="carousel-control-prev" href="#latestCarousel" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#latestCarousel" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
+  </div>
+
+  <br>
+
+
+  <!------------------------------Testimonial---------------------------------->
+  <div class="testimonial">
+    <div class="small-container">
+      <div class="row">
+        <div class="col-3">
+          <i class="fa fa-quote-left"></i>
+          <p>
+            Lorem Ipsum is simply dummy text of the printing and typesetting
+            industry. Lorem Ipsum has been the industry's standard dummy text
+            ever since the 1500s, when an unknown printer took a galley of
+            type and scrambled it to make a type specimen book.
+          </p>
+          <div class="rating">
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star-o"></i>
+            <i class="fa-solid fa-star-half-stroke" style="color: #f96534;"></i>
+          </div>
+          <img src="/res/images/somesh.png" />
+          <h3>Somesh patel</h3>
+        </div>
+        <div class="col-3">
+          <i class="fa fa-quote-left"></i>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam iure provident, nisi non similique cum animi
+            ex
+            minima necessitatibus, aliquam, quibusdam blanditiis? Delectus voluptatibus sunt et earum, id tempore ipsa
+            deleniti mollitia culpa.
+          </p>
+          <div class="rating">
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star-o"></i>
+          </div>
+          <img src="/res/images/Anish.jpg" />
+          <h3>Anish Singh Rajawat</h3>
+        </div>
+        <div class="col-3">
+          <i class="fa fa-quote-left"></i>
+          <p>
+            Lorem Ipsum is simply dummy text of the printing and typesetting
+            industry. Lorem Ipsum has been the industry's standard dummy text
+            ever since the 1500s, when an unknown printer took a galley of
+            type and scrambled it to make a type specimen book.
+          </p>
+          <div class="rating">
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star-o"></i>
+            <i class="fa-solid fa-star-half-stroke" style="color: #f96534;"></i>
+          </div>
+          <img src="/res/images/kafilkhan.jpg" />
+          <h3>Kafil khan</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!----------------------------------Brands------------------------------------>
+  <div class="brands">
+    <div class="small-container">
+      <div class="row">
+        <div class="col-5">
+          <img src="res/images/logo-godrej.png" alt="" />
+        </div>
+        <div class="col-5">
+          <img src="res/images/logo-oppo.png" alt="" />
+        </div>
+        <div class="col-5">
+          <img src="res/images/logo-coca-cola.png" alt="" />
+        </div>
+        <div class="col-5">
+          <img src="res/images/logo-paypal.png" alt="" />
+        </div>
+        <div class="col-5">
+          <img src="res/images/logo-philips.png" alt="" />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-se-phle-offer-for-login">
+    <span>JOIN SHOCO AND GET 15% OFF</span>
+    <a href="/res/pages/authentication.html"><button>SIGN UP FOR FREE</button></a>
+
+  </div>
+  <!----------------------------------footer------------------------------------->
+  <div class="footer">
+    <div class="container">
+      <div class="row">
+      </div>
+      <div class="footer-col-2">
+        <img src="/res/images/Free Simple Modern Circle Design Studio Logo (3).png" alt="error" width="100px">
+        <p>
+          Our Purpose Is To Sustainably Make the Pleasure and Benefits of
+          shoes to the Many.
+        </p>
+      </div>
+    </div>
+
+    <hr />
+    <!--horizontal line-->
+    <h2 style="text-align: center; color: white;">CREATED BY KAFIL & ANISH</h2>
+    <p class="copyright">Copyright 2024 - SHOCO</p>
+  </div>
+  </div>
+
+
+
+  <!-- // ----------------------------animation GSAP---------------------------------------->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+    integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+    var t1 = gsap.timeline()
+    t1.from("#loading-pgae", {
+      top: "100"
+    })
+    t1.from("#loading-page  span", {
+      x: 100,
+      opacity: 0,
+      duration: 0.2,
+      stagger: 0.2
+    })
+    t1.to("#loading-page  span", {
+      opacity: 0,
+      x: -100,
+      duration: 0.2,
+      stagger: 0.2
+    })
+
+    t1.to("#loading-page", {
+      opacity: 0
+    })
+    t1.from(".first-img-h3, .first-img-h4,.first-img-btn", {
+      y: 100,
+      opacity: 0,
+      duration: 1,
+      stagger: 0.3,
+    })
+    t1.to("#loading-page", {
+      display: "none"
+    })
+
+
+  </script>
+</body>
+
+</html>

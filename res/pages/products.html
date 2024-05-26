@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Product Page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <link rel="stylesheet" href="/res/css/products.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+</head>
+
+<body>
+
+    <!-- header-section-end -->
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border text-primary" role="status" id="loading">
+            <span class="sr-only">loading....</span>
+        </div>
+    </div>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="index.html">
+                    <img src="/res/images/Free Simple Modern Circle Design Studio Logo (3).png" alt="error"
+                        width="100px">
+                </a>
+            </div>
+
+
+
+            <div class="list-item">
+                <ul>
+
+                    <li class="nav-item">
+                        <div class="input-group mb-3" style="margin-bottom: 0% !important;">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></span>
+                            </div>
+                            <input type="text" id="searchInput" class="form-control" placeholder="Search for products.."
+                                aria-label="Search" aria-describedby="basic-addon1">
+                        </div>
+                    </li>
+                    <li class="nav-item">
+
+                        <div class="input-group mb-3" style=" width: 250px; margin-bottom: 0% !important;">
+                            <div class="input-group-prepend">
+                                <label class="input-group-text" for="sortSelect"><i
+                                        class="fas fa-sort-amount-up"></i></label>
+                            </div>
+                            <select class="custom-select" id="sortSelect">
+                                <option value="priceAsc">Price (Low to High)</option>
+                                <option value="priceDesc">Price (High to Low)</option>
+                            </select>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <div class="input-group mb-3" style="width: 250px; margin-bottom: 0% !important;">
+                            <div class="input-group-prepend">
+                                <label class="input-group-text" for="genderSelect"><i
+                                        class="fas fa-genderless"></i></label>
+                            </div>
+                            <select class="custom-select" id="genderSelect">
+                                <option value="">All</option>
+                                <option value="men">Men</option>
+                                <option value="women">Women</option>
+                                <option value="kids">Kids</option>
+                            </select>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="/res/pages/index.html"><i class="fa-solid fa-house"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/res/pages/products.html"><i class="fa-brands fa-product-hunt"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/res/pages/usersection.html"><i class="fa-solid fa-user"></i>
+                            <span id="userEmail" class="username">guest</span>
+                        </a>
+                    </li>
+                    <li class="nav-item cart-item ">
+                        <a id="cartButton" href="/res/pages/cart.html" class="btn btn-dark cart-button">
+                            <i class="fas fa-shopping-cart fa-lg">
+                                <span id="cartItemCount" class="cart-item-count badge badge-dark">0</span>
+                            </i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <div class="container mt-3">
+
+    </div>
+
+    <div id="productContainer" class="row" style="max-width: 80vw; margin: auto;">
+        <!-- Products will be loaded here -->
+    </div>
+
+    <script type="module">
+
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
+        import { getDatabase, ref, onValue, get } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
+
+        // Initialize Firebase App
+        const firebaseConfig = {
+            apiKey: "AIzaSyBAROjb_hDFU7eOw_Es0oUkQSngnoL3M2k",
+            authDomain: "project-store-uni.firebaseapp.com",
+            projectId: "project-store-uni",
+            storageBucket: "project-store-uni.appspot.com",
+            messagingSenderId: "733337078593",
+            appId: "1:733337078593:web:ff198355dd0b192b952fc0",
+            measurementId: "G-RG7MSM6SST",
+            databaseURL: "https://project-store-uni-default-rtdb.firebaseio.com/"
+        };
+        initializeApp(firebaseConfig);
+
+        // Initialize Realtime Database
+        const auth = getAuth();
+        const db = getDatabase();
+
+        // Navbar elements
+        const navbarUserEmail = document.getElementById('userEmail');
+        const navbarCartCount = document.getElementById('cartItemCount');
+
+        // Listen for auth state changes
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                // User is signed in
+                const userId = user.uid;
+                const ordersRef = ref(db, `orders/${userId}`);
+
+                // Fetch the number of items in the cart
+                fetchCartItemCount(ordersRef).then(count => {
+                    // Update the cart item count badge
+                    navbarCartCount.textContent = count;
+                });
+
+                // Update the user email
+                navbarUserEmail.textContent = user.displayName || user.email;
+            } else {
+                // User is signed out
+                navbarUserEmail.textContent = 'guest';
+                navbarCartCount.textContent = '0';
+            }
+        });
+
+        // Fetch the number of items in the cart
+        function fetchCartItemCount(ordersRef) {
+            return get(ordersRef).then(snapshot => {
+                let count = 0;
+                snapshot.forEach(orderSnapshot => {
+                    const order = orderSnapshot.val();
+                    // Only count the order if its status is "incart"
+                    if (order.orderStatus === 'incart') {
+                        count++;
+                    }
+                });
+                return count;
+            });
+        }
+        // Fetch all products
+        const shoesRef = ref(db, 'shoes');
+        let products = [];
+        onValue(shoesRef, (snapshot) => {
+            snapshot.forEach((childSnapshot) => {
+                const product = childSnapshot.val();
+                products.push(product);
+            });
+            // Get the gender from the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            let gender = urlParams.get('gender');
+            // If a gender is selected, filter the products by gender
+            if (gender) {
+                gender = gender.toLowerCase();
+                products = products.filter(product => product.gender.toLowerCase() === gender);
+                // Set the gender select box to the selected gender
+                document.getElementById('genderSelect').value = gender;
+            }
+            displayProducts(products);
+        });
+
+        let displayedProducts = [];
+
+        function displayProducts(productsToDisplay) {
+            displayedProducts = productsToDisplay;
+            const productContainer = document.getElementById('productContainer');
+            productContainer.style.opacity = 1; // Show content after loading
+
+            const loading = document.getElementById('loading');
+            productContainer.innerHTML = '';
+            loading.style.display = 'none'; // Hide loading spinner
+            if (productsToDisplay.length === 0) {
+                // Show image and text when there are no results
+                productContainer.innerHTML = '<img src="/res/images/noresults2.jpg" id="simg" alt="No Results">';
+            } else {
+                for (const product of productsToDisplay) {
+                    const productElement = document.createElement('div');
+                    productElement.classList.add('col-sm-4');
+                    productElement.innerHTML += `
+                <a href="/res/pages/products-details.html?name=${encodeURIComponent(product.Name)}" class="card">
+                    <img src="${product['Img URL']}" class="card-img-top" alt="${product.Name}">
+                    <div class="card-body">
+                        <h5 class="card-title">${product.Name}</h5>
+                        <p class="card-text">Brand: ${product.Brand}</p>
+                        <i class="fa-solid fa-star" style="color: #f96534;"></i>
+                        <i class="fa-solid fa-star" style="color: #f96534;"></i>
+                        <i class="fa-solid fa-star" style="color: #f96534;"></i>
+                        <i class="fa-solid fa-star" style="color: #f96534;"></i>
+                        <i class="fa-solid fa-star-half-stroke" style="color: #f96534;"></i>
+
+                        <strike> <p class="card-text">MRP: ₹${product.MRP}</p></strike>
+                        <p class="card-text">Price: ₹${product.Price}</p>
+                    </div>
+                </a>
+            `;
+                    productContainer.appendChild(productElement);
+                }
+            }
+        }
+
+        function filterProducts() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const genderSelect = document.getElementById('genderSelect').value;
+            let filteredProducts = products;
+            if (searchInput) {
+                filteredProducts = filteredProducts.filter(product => product.Name.toLowerCase().includes(searchInput) || product.Brand.toLowerCase().includes(searchInput) || product.MRP.toString().includes(searchInput));
+            }
+            if (genderSelect) {
+                filteredProducts = filteredProducts.filter(product => product.gender === genderSelect);
+            }
+            displayProducts(filteredProducts);
+        }
+
+        function sortProducts() {
+            const sortSelect = document.getElementById('sortSelect').value;
+            let sortedProducts = [...displayedProducts];
+            if (sortSelect === 'priceAsc') {
+                sortedProducts.sort((a, b) => a.Price - b.Price);
+            } else if (sortSelect === 'priceDesc') {
+                sortedProducts.sort((a, b) => b.Price - a.Price);
+            }
+            displayProducts(sortedProducts);
+        }
+
+        // Add event listeners
+        document.getElementById('searchInput').addEventListener('keyup', filterProducts);
+        document.getElementById('sortSelect').addEventListener('change', sortProducts);
+        document.getElementById('genderSelect').addEventListener('change', filterProducts);
+
+
+
+    </script>
+</body>
+
+</html>

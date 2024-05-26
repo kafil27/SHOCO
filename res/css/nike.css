@@ -1,0 +1,137 @@
+*{
+    margin: 0;
+    padding: 0%;
+}
+header {
+    background-color: black;
+    height: 80px;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px;
+
+}
+
+nav .list-item ul {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    list-style: none;
+}
+
+.list-item ul li a {
+    color: white;
+    /* font-size: 16px; */
+    /* font-weight: bold; */
+    font-family: sans-serif;
+    text-decoration: none;
+}
+.frst-section{
+    max-width: 70vw;
+    height: 70vh;
+    margin: auto;
+    display: flex;
+    margin-top: 43px;
+
+}
+.card-img{
+    width: 50%;
+    height: 100%;
+}
+.card-img img{
+    width: 100%;
+    height: 100%;
+}
+.button button{
+    border: 2px solid rgba(117, 117, 117, 0.444);
+    width: 80px;
+    height: 44px;
+    border-radius: 8px;
+    margin-right: 23px;
+    background-color: white;
+    margin-bottom: 18px;
+}
+.button{
+    margin-top: 35px;
+    margin-bottom: 32px;
+    max-width: 426px;
+
+}
+.add-card{
+    position: relative;
+    overflow: hidden;
+    height: 50px;
+    width: 27vw;
+    border-radius: 22px;
+    border: 2px solid black;
+}
+.add-card:hover .green{
+    left: 0;
+}
+.green{
+    width: 100%;
+    transition: left 1s ease;
+    height: 100%;
+    background-color: rgb(0, 0, 0);
+    position: absolute;
+    top: 0%;
+    left: -100%;
+    /* border-radius: 22px; */
+}
+#addToCart:hover{
+    color: white;
+}
+#addToCart{
+    z-index: 99;
+    position: relative;
+    background: none;
+    /* background-color: rgb(255, 255, 255); */
+    font-size: 22px;
+    width: 100%;
+    height: 100%;
+    font-weight: bold;
+    text-align: center;
+    border: none;
+    color: black;
+
+}
+.card-detail{
+    margin: 13px 12px 1px 60px;
+    line-height: 45px;
+}
+.detail :nth-child(1){
+    font-size: 33px;
+    font-weight: bold;
+}
+.detail :nth-child(2){
+    color: #877472;
+}
+.detail :nth-child(3){
+    color: rgb(0, 0, 0);
+    font-size: 22px;
+    font-weight: bold;
+}
+    
+.list-item ul li:after{
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: 0%;
+    background-color:  #ffcf01;
+    transition: all ease 1s;
+}
+.list-item ul li:hover::after{
+    width: 100%;
+}
+.list-item {
+    position: static;
+}
+.list-item ul li{
+    /* background-color: red; */
+    position: relative;
+}

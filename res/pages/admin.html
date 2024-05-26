@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <!-- Include Bootstrap for styling -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/res/css/admin.css">
+    <style>
+        .nav-button.active {
+            background-color: #000000;
+            /* Change this to your preferred color */
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <nav id="nav'" , class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <div class="logo-item">
+            <a href="index.html">
+                <img src="/res/images/logo-white.png" alt="error" width="100px">
+            </a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <a href=""></a>
+                <li class="nav-item" style="margin-right:22px ;">
+                    <button id="showAddProduct" class="nav-button" style="    padding: 5px 14px 5px 18px; font-size: 20px;
+                    border-radius: 9px;">Add Product</button>
+                </li>
+                <li class="nav-item">
+                    <button id="showOrderManagement" class="nav-button" style="    padding: 5px 14px 5px 18px;
+                    border-radius: 9px; font-size: 19px;">Order Management</button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div id="addProductSection" class="container mt-5">
+        <!-- Your existing Add Product form goes here -->
+        <div class="container mt-5">
+            <h2>Add Product</h2>
+            <form id="productForm">
+                <div class="form-group">
+                    <label for="productName">Product Name</label>
+                    <input type="text" class="form-control" id="productName" required>
+                </div>
+                <div class="form-group">
+                    <label for="productBrand">Brand</label>
+                    <input type="text" class="form-control" id="productBrand" required>
+                </div>
+                <div class="form-group">
+                    <label for="productMRP">MRP</label>
+                    <input type="text" class="form-control" id="productMRP" required>
+                </div>
+                <div class="form-group">
+                    <label for="productPrice">Product Price</label>
+                    <input type="number" class="form-control" id="productPrice" required>
+                </div>
+                <div class="form-group">
+                    <label for="productCategory">Product Category</label>
+                    <input type="text" class="form-control" id="productCategory" required>
+                </div>
+                <div class="form-group">
+                    <label for="productColors">Product Colors (comma-separated)</label>
+                    <input type="text" class="form-control" id="productColors" required>
+                </div>
+                <div class="form-group">
+                    <label for="productImage">Product Image URL</label>
+                    <input type="url" class="form-control" id="productImage" required>
+                </div>
+                <div class="form-group">
+                    <label for="productURL">Product URL</label>
+                    <input type="url" class="form-control" id="productURL" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Product</button>
+            </form>
+            <div id="errorContainer" class="mt-3 text-danger"></div>
+        </div>
+
+        <!--  Upload Via JsonFile Section -->
+
+        <div class="container mt-5">
+            <h2>Upload JSON Data</h2>
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label for="jsonFile">JSON File</label>
+                    <input type="file" class="form-control-file" id="jsonFile" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Upload Data</button>
+            </form>
+            <div id="uploadErrorContainer" class="mt-3 text-danger"></div>
+        </div>
+
+        <!-- Recently Added Products Section -->
+        <div class="container mt-5">
+            <h2>Recently Added Products</h2>
+            <div id="recentProducts" class="d-flex flex-row justify-content-between"></div>
+        </div>
+
+
+    </div>
+    <div id="orderManagementSection" class="container mt-5" style="display: none;">
+        <h2>Order Management</h2>
+        <div class="form-group">
+            <label for="searchOrder">Search Order</label>
+            <input type="text" class="form-control" id="searchOrder" placeholder="Search by Order ID or Item Name">
+        </div>
+        <div class="form-group">
+            <label for="filterStatus">Filter by Status</label>
+            <select class="form-control" id="filterStatus">
+                <option value="">All</option>
+                <option value="processing">Processing</option>
+                <option value="dispatched">Dispatched</option>
+                <option value="declined">Declined</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="sortOrder">Sort Order</label>
+            <select class="form-control" id="sortOrder">
+                <option value="">None</option>
+                <option value="timeCreated">Time Created</option>
+                <option value="totalAmount">Total Amount</option>
+                <option value="itemQuantity">Item Quantity</option>
+            </select>
+        </div>
+        <div id="noOrdersContainer"></div>
+        <div id="orderManagement">
+            <!-- Order table will be populated here -->
+        </div>
+    </div>
+
+    </div>
+    </div>
+
+
+
+
+
+
+
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
+        import { getDatabase, ref, set, get, onValue, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
+
+        // Initialize Firebase App
+        const firebaseConfig = {
+            apiKey: "AIzaSyBAROjb_hDFU7eOw_Es0oUkQSngnoL3M2k",
+            authDomain: "project-store-uni.firebaseapp.com",
+            projectId: "project-store-uni",
+            storageBucket: "project-store-uni.appspot.com",
+            messagingSenderId: "733337078593",
+            appId: "1:733337078593:web:ff198355dd0b192b952fc0",
+            measurementId: "G-RG7MSM6SST",
+            databaseURL: "https://project-store-uni-default-rtdb.firebaseio.com/"
+        };
+        initializeApp(firebaseConfig);
+
+        // Initialize Realtime Database
+        const db = getDatabase();
+        // Add this function to get the recently added products
+        async function getRecentProducts() {
+            const recentProductsContainer = document.getElementById('recentProducts');
+            recentProductsContainer.innerHTML = ''; // Clear the container
+
+            const shoesRef = ref(db, 'shoes');
+            let products = [];
+            onValue(shoesRef, (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    const product = childSnapshot.val();
+                    // Only add the product to the array if timeCreated is not null
+                    if (product.timeCreated) {
+                        products.push(product);
+                    }
+                });
+                // Sort the products by timeCreated in descending order
+                products.sort((a, b) => b.timeCreated - a.timeCreated); // U
+                // Only take the first 5 products
+                products = products.slice(0, 5);
+                // Display the products
+                for (const product of products) {
+                    const productElement = document.createElement('div');
+                    productElement.classList.add('card');
+                    productElement.style.width = '18rem';
+                    productElement.innerHTML += `
+                <img src="${product['Img URL']}" class="card-img-top" alt="${product.Name}">
+                <div class="card-body">
+                    <h5 class="card-title">${product.Name}</h5>
+                    <p class="card-text">${product.Brand}</p>
+                    <a href="${product['Product URL']}" class="btn btn-primary">Go somewhere</a>
+                    <button class="deleteProduct btn btn-danger">Delete</button>
+                </div>
+            `;
+                    recentProductsContainer.appendChild(productElement);
+
+                    // Delete product when "Delete" button is clicked
+                    productElement.querySelector('.deleteProduct').addEventListener('click', async () => {
+                        await set(ref(db, 'shoes/' + product.Name), null);
+                        productElement.remove(); // Remove product element from the page
+                    });
+                }
+            });
+        }
+
+        // Call the function when the page loads
+        getRecentProducts();
+
+
+        const productForm = document.getElementById('productForm');
+        const errorContainer = document.getElementById('errorContainer');
+
+        productForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const productName = document.getElementById('productName').value;
+            const productBrand = document.getElementById('productBrand').value;
+            const productMRP = document.getElementById('productMRP').value;
+            const productPrice = document.getElementById('productPrice').value;
+            const productCategory = document.getElementById('productCategory').value;
+            const productColors = document.getElementById('productColors').value;
+            const productImage = document.getElementById('productImage').value;
+            const productURL = document.getElementById('productURL').value;
+
+            try {
+                const productRef = ref(db, 'shoes/' + productName);
+                await set(productRef, {
+                    'Name': productName,
+                    'Brand': productBrand,
+                    'MRP': productMRP,
+                    'Price': productPrice,
+                    'Category': productCategory,
+                    'Colors': productColors,
+                    'Img URL': productImage,
+                    'Product URL': productURL,
+                    'timeCreated': serverTimestamp(), // 
+                });
+                console.log('Product added successfully!');
+                getRecentProducts(); // Refresh the recently added products
+
+                // Clear form fields
+                productForm.reset();
+                errorContainer.textContent = '';
+            } catch (error) {
+                console.error('Error adding product:', error);
+                errorContainer.textContent = 'Error adding product. Please try again.';
+            }
+        });
+
+        const uploadForm = document.getElementById('uploadForm');
+        const uploadErrorContainer = document.getElementById('uploadErrorContainer');
+
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const jsonFile = document.getElementById('jsonFile').files[0];
+            if (!jsonFile) {
+                uploadErrorContainer.textContent = 'Please select a file.';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    for (const item of data) {
+                        const docId = item['Name'];
+                        await set(ref(db, 'shoes/' + docId), item);  // Corrected line
+                    }
+                    console.log('Data uploaded successfully!');
+                    getRecentProducts(); // Refresh the recently added products
+
+                    // Clear form fields
+                    uploadForm.reset();
+                    uploadErrorContainer.textContent = '';
+                } catch (error) {
+                    console.error('Error uploading data:', error);
+                    uploadErrorContainer.textContent = 'Error uploading data. Please try again.';
+                }
+            };
+            reader.readAsText(jsonFile);
+        });
+
+
+
+        // Fetch all orders from the database -----------------ORDER SECTION------------------------
+
+
+        async function fetchOrders() {
+            const orders = [];
+            const ordersRef = ref(db, 'orders');
+            await onValue(ordersRef, (snapshot) => {
+
+                if (!snapshot.hasChildren()) {
+                    // If there are no orders, create the noOrdersImage and add it to the noOrdersContainer
+                    const img = document.createElement('img');
+                    img.id = 'noOrdersImage';
+                    img.src = "/res/images/noorders.jpg"; // replace with the path to your image
+                    document.getElementById('noOrdersContainer').appendChild(img);
+                    // Add a text message
+                    const message = document.createElement('p');
+                    message.textContent = 'No Orders 😭';
+                    document.getElementById('noOrdersContainer').appendChild(message);
+
+                    document.getElementById('orderManagement').style.display = 'none';
+                } else {
+                    snapshot.forEach((userSnapshot) => {
+                        const userId = userSnapshot.key;
+                        const userOrders = userSnapshot.val();
+                        for (const productId in userOrders) {
+                            const order = userOrders[productId];
+                            orders.push({ ...order, userId, productId });
+                        }
+                    });
+                    // If there are orders, remove the noOrdersImage from the noOrdersContainer
+                    const img = document.getElementById('noOrdersImage');
+                    if (img) img.remove();
+                    document.getElementById('orderManagement').style.display = 'block';
+                }
+
+
+            });
+            return orders;
+        }
+
+        // Update order status
+        async function updateOrderStatus(userId, productId, status) {
+            const orderRef = ref(db, 'orders/' + userId + '/' + productId + '/orderStatus');
+            await set(orderRef, status);
+        }
+
+
+
+        // Display orders
+        function displayOrders(orders) {
+            const orderManagementContainer = document.getElementById('orderManagement');
+            orderManagementContainer.innerHTML = ''; // Clear the container
+
+            if (orders.length === 0) {
+                // If there are no orders, display a message
+                const message = document.createElement('p');
+                message.textContent = 'Nothing 😭';
+                message.style.textAlign = 'center'; // Center the text
+                message.style.padding = '20px'; // Add padding
+                message.style.fontFamily = 'Arial, sans-serif'; // Change the font
+                message.style.fontSize = '20px'; // Change the font size
+                orderManagementContainer.appendChild(message);
+                return;
+            }
+
+            // Create table
+            const table = document.createElement('table');
+            table.classList.add('table'); // Bootstrap class
+
+            // Table header
+            const thead = document.createElement('thead');
+            const tr = document.createElement('tr');
+            ['Status', 'Order ID', 'Item Name', 'Quantity', 'Total Amount', 'Order Status', 'Product Image', 'Customer ID', 'Action'].forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                tr.appendChild(th);
+            });
+            thead.appendChild(tr);
+            table.appendChild(thead);
+
+            // Table body
+            const tbody = document.createElement('tbody');
+            orders.forEach(order => {
+                const tr = document.createElement('tr');
+
+                // Status icon
+                const statusTd = document.createElement('td');
+                const statusIcon = document.createElement('span');
+                statusIcon.textContent = order.orderStatus === 'dispatched' ? '✔️' : order.orderStatus === 'declined' ? '❌' : '⚠️';
+                statusIcon.style.color = order.orderStatus === 'dispatched' ? 'green' : order.orderStatus === 'declined' ? 'red' : 'yellow';
+                statusTd.appendChild(statusIcon);
+                tr.appendChild(statusTd);
+
+                // Other data
+                [order.orderId, order.itemName, order.itemQuantity, '₹' + order.totalAmount, order.orderStatus].forEach(data => {
+                    const td = document.createElement('td');
+                    td.textContent = data;
+                    tr.appendChild(td);
+                });
+                // Product image
+                const imgTd = document.createElement('td');
+                const productImage = document.createElement('img');
+                productImage.src = order.pimg; // Assuming 'pimg' contains the product image URL
+                productImage.alt = order.itemName; // Set an appropriate alt text
+                productImage.style.width = '50px'; // Resize the image
+                productImage.style.height = '50px';
+                productImage.style.borderRadius = "10%"
+                imgTd.appendChild(productImage);
+                tr.appendChild(imgTd);
+
+
+                // Customer ID
+                const customerIdTd = document.createElement('td');
+                customerIdTd.textContent = order.userId; // Assuming 'userId' contains the customer ID
+                tr.appendChild(customerIdTd);
+
+
+                // Action buttons
+                const td = document.createElement('td');
+                ['Accept', 'Reject'].forEach(action => {
+                    const button = document.createElement('button');
+                    button.textContent = action;
+                    button.classList.add(action === 'Accept' ? 'btn-success' : 'btn-danger');
+                    button.style.padding = '5px 10px'; // Adjust padding
+                    button.style.fontSize = '14px'; // Adjust font size
+                    button.style.transition = 'transform 0.3s ease-in-out'; // Add animation
+                    button.addEventListener('mouseover', () => {
+                        button.style.transform = 'scale(1.1)'; // Enlarge the button when mouse over
+                    });
+                    button.addEventListener('mouseout', () => {
+                        button.style.transform = 'scale(1)'; // Return to original size when mouse out
+                    });
+
+                    // Add icons
+                    const icon = document.createElement('i');
+                    icon.classList.add('fas', action === 'Accept' ? 'fa-check' : 'fa-times');
+                    icon.style.marginRight = '5px'; // Add some space between the icon and the text
+                    button.prepend(icon); // Add the icon before the text
+
+                    button.disabled = (action === 'Accept' && order.orderStatus === 'dispatched') || (action === 'Reject' && order.orderStatus === 'declined');
+                    button.addEventListener('click', async () => {
+                        await updateOrderStatus(order.userId, order.productId, action === 'Accept' ? 'dispatched' : 'declined');
+                        displayOrders(await fetchOrders()); // Refresh the orders
+                    });
+                    td.appendChild(button);
+                });
+                tr.appendChild(td);
+
+
+                tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
+
+            orderManagementContainer.appendChild(table);
+        }
+
+
+        // Fetch and display orders
+        fetchOrders().then(displayOrders);
+
+        // Add event listener to the search input
+        document.getElementById('searchOrder').addEventListener('input', async (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const orders = await fetchOrders();
+            const filteredOrders = orders.filter(order =>
+                order.orderId.toLowerCase().includes(searchTerm) ||
+                order.itemName.toLowerCase().includes(searchTerm)
+            );
+            displayOrders(filteredOrders);
+        });
+
+        // Add event listener to the status filter
+        document.getElementById('filterStatus').addEventListener('change', async (e) => {
+            const status = e.target.value;
+            const orders = await fetchOrders();
+            const filteredOrders = status ? orders.filter(order => order.orderStatus === status) : orders;
+            displayOrders(filteredOrders);
+        });
+
+        // Add event listener to the sort order select
+        document.getElementById('sortOrder').addEventListener('change', async (e) => {
+            const sortOrder = e.target.value;
+            const orders = await fetchOrders();
+            const sortedOrders = sortOrder ? orders.sort((a, b) => a[sortOrder] - b[sortOrder]) : orders;
+            displayOrders(sortedOrders);
+        });
+
+        document.getElementById('showAddProduct').addEventListener('click', () => {
+            document.getElementById('addProductSection').style.display = 'block';
+            document.getElementById('orderManagementSection').style.display = 'none';
+            document.getElementById('showAddProduct').classList.add('active');
+            document.getElementById('showOrderManagement').classList.remove('active');
+        });
+
+        document.getElementById('showOrderManagement').addEventListener('click', () => {
+            document.getElementById('addProductSection').style.display = 'none';
+            document.getElementById('orderManagementSection').style.display = 'block';
+            document.getElementById('showAddProduct').classList.remove('active');
+            document.getElementById('showOrderManagement').classList.add('active');
+        });
+
+
+
+
+    </script>

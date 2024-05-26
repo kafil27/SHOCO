@@ -1,0 +1,161 @@
+
+
+.order-card {
+    transition: 0.3s;
+    border-radius: 5px;
+    /* 5px rounded corners */
+    /* Add transition for transform */
+    transition: transform 0.3s ease;
+    margin: 1rem;
+}
+
+.order-card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+    /* Scale the card up to 105% when hovered over */
+    transform: scale(1.05);
+    z-index: 1;
+}
+
+.order-card.processing {
+    box-shadow: 0 0 10px 5px yellow;
+}
+
+.order-card.shipped {
+    box-shadow: 0 0 10px 5px green;
+}
+
+.order-card.declined {
+    box-shadow: 0 0 10px 5px red;
+}
+
+.order-card.dispatched {
+    box-shadow: 0 0 10px 5px blue;
+}
+
+.price,
+.quantity,
+.status {
+    font-weight: bold;
+}
+
+.processing .status {
+    color: yellow;
+}
+
+.shipped .status {
+    color: green;
+}
+
+.declined .status {
+    color: red;
+}
+
+.dispatched .status {
+    color: blue;
+}
+
+.price,
+.quantity,
+.status {
+    font-weight: bold;
+}
+
+.processing .status {
+    color: yellow;
+}
+
+.shipped .status {
+    color: green;
+}
+
+.declined .status {
+    color: red;
+}
+
+.dispatched .status {
+    color: blue;
+}
+
+.price,
+.quantity,
+.status {
+    font-weight: bold;
+}
+
+.processing .status {
+    color: yellow;
+}
+
+.shipped .status {
+    color: green;
+}
+
+.declined .status {
+    color: red;
+}
+
+.dispatched .status {
+    color: blue;
+}
+
+.order-card h1 {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.order-card .price {
+    color: green;
+    font-weight: bold;
+}
+
+.order-card .quantity,
+.order-card .color,
+.order-card .address,
+.order-card .customer-id {
+    color: #888;
+}
+
+.order-card .quantity-value,
+.order-card .color-value,
+.order-card .address-value,
+.order-card .customer-id-value {
+    font-weight: bold;
+}
+
+.order-card .status-icon {
+    font-size: 1.2em;
+}
+
+
+.order-card img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Center the "No Orders" image */
+.center {
+    text-align: center;
+    align-content: center;
+}
+
+#noOrders {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    /* This makes the div take up the full height of the viewport */
+}
+
+
+/* Adjust the image size */
+.no-orders-img {
+    align-content: center;
+    align-items: center;
+    max-height: 50%;
+    max-width: 50%;
+    /* Adjust as needed */
+}
+
+#loading {
+    display: none;
+}

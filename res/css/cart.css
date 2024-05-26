@@ -1,0 +1,116 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.empty-cart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    /* This will make the container take the full height of the viewport */
+}
+
+#emptyCart {
+    display: none;
+    text-align: center;
+}
+
+#emptyCart img {
+    width: 25%;
+    height: 25%;
+    margin-top: 10%;
+}
+
+
+.checkout-section {
+    /* display: block; */
+    width: 100%;
+    /* This makes the section take up the full width of the container */
+    text-align: center;
+    /* This centers the content */
+}
+
+.cart-item {
+    /* display: inline-block; */
+    /* flex: 0 0 calc(50% - 20px); */
+    /* flex-direction: column; */
+    /* align-items: center; */
+    display: flex;
+    border: 1px solid #ddd;
+    margin: 10px;
+    padding: 10px;
+    /* transition: transform .2s; */
+    /* Animation */
+    border-radius: 10px;
+}
+
+.card-body {
+    display: flex;
+    gap: 120px;
+    margin: 53px;
+    align-items: center;
+
+}
+
+
+
+.cart-item h2 {
+    font-size: 16px;
+    max-width: 140px;
+}
+
+.cart-item p {
+    margin-bottom: 10px;
+    max-width: 84px;
+}
+
+.cart-item .removeFromCart {
+    background-color: #000000;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    /* display: inline-block; */
+    font-size: 16px;
+    margin: 4px 2px;
+    border-radius: 22px;
+    /* transition-duration: 0.4s; */
+    cursor: pointer;
+}
+
+.cart-item .removeFromCart:hover {
+    background-color: white;
+    color: black;
+    border: 2px solid black;
+
+    /* border: 2px solid #dc3545; */
+}
+
+
+.cart-item img {
+    width: 200px;
+    height: 200px;
+}
+
+#checkoutButton {
+    width: 300px;
+    display: block;
+    height: 42px;
+    background: black;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 22px;
+    margin: auto auto;
+}
+
+#checkoutButton:hover {
+    background-color: white;
+    color: black;
+}
+
+.btn {
+    margin-top: 20px;
+}

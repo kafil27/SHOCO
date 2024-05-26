@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Cart</title>
+    <link rel="stylesheet" href="/res/css/cart.css">
+    <!-- Add Bootstrap CSS -->
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css"> -->
+
+</head>
+
+<body>
+
+    <!-- loading -->
+    <div id="loading" class="text-center">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <div class="empty-cart-container">
+        <div id="emptyCart" class="text-center">
+            <img src="/res/images/cartempty2.jpg" alt="Empty Cart" class="img-fluid">
+            <p>Your cart is empty. Let's go find some shoes!</p>
+        </div>
+    </div>
+
+    <div id="cartContainer" class="cart-container" style="display: none;">
+        <!-- Cart items will be loaded here -->
+    </div>
+    <div id="checkoutSection" class="checkout-section" style="display: none;">
+        <p id="total"></p>
+        <button id="checkoutButton" class="btn btn-primary">
+            <i class="bi bi-cart-check"></i> Checkout </button>
+    </div>
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
+        import { getDatabase, ref, onValue, set, update } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
+
+
+        // Add Razorpay script
+        const script = document.createElement('script');
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        document.head.appendChild(script);
+
+
+
+
+
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBAROjb_hDFU7eOw_Es0oUkQSngnoL3M2k",
+            authDomain: "project-store-uni.firebaseapp.com",
+            projectId: "project-store-uni",
+            storageBucket: "project-store-uni.appspot.com",
+            messagingSenderId: "733337078593",
+            appId: "1:733337078593:web:ff198355dd0b192b952fc0",
+            measurementId: "G-RG7MSM6SST",
+            databaseURL: "https://project-store-uni-default-rtdb.firebaseio.com/"
+        };
+        initializeApp(firebaseConfig);
+
+        // Initialize Realtime Database
+        const db = getDatabase();
+
+        // Initialize Firebase Auth
+        const auth = getAuth();
+
+        // Fetch cart items from the database
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const ordersRef = ref(db, 'orders/' + user.uid);
+                onValue(ordersRef, (snapshot) => {
+                    if (!snapshot.hasChildren()) {
+                        // If the cart is empty, show the emptyCart div and hide other elements
+
+                        document.getElementById('cartContainer').style.display = 'none';
+                        document.getElementById('checkoutButton').style.display = 'none';
+                        document.getElementById('loading').style.display = 'none'; // Hide loading animation
+                    } else {
+                        const orders = snapshot.val();
+                        let total = 0;
+                        let hasItems = false; // Flag to check if there are any items in the cart
+                        for (const productName in orders) {
+                            if (orders[productName].orderStatus === 'incart') {
+                                hasItems = true; // Set the flag to true
+                                const itemElement = document.createElement('div');
+                                itemElement.classList.add('cart-item', 'card'); // Add 'card' class
+                                itemElement.innerHTML = `
+    
+                                <img src="${orders[productName].pimg}" alt="${orders[productName].itemName}" class="card-img-top"> <!-- Display the product image -->
+    
+                                <div class="card-body">
+    
+                                    <h2 class="card-title">${orders[productName].itemName}</h2>
+    
+                                    <p class="card-text">Price: ₹${orders[productName].totalAmount / orders[productName].itemQuantity}</p>
+    
+                                    <p class="card-text">Quantity: ${orders[productName].itemQuantity}</p>
+    
+                                    <p class="card-text">Color: ${orders[productName].colors}</p>
+    
+                                    <button class="removeFromCart btn btn-danger">
+                                        <i class="bi bi-trash"></i> Remove from Cart
+                                        </button>
+    
+                                    </div>
+
+                                    `;
+                                total += orders[productName].totalAmount;
+                                document.getElementById('cartContainer').appendChild(itemElement);
+
+                                // Remove item from cart when "Remove from Cart" button is clicked
+                                itemElement.querySelector('.removeFromCart').addEventListener('click', async () => {
+                                    set(ref(db, 'orders/' + user.uid + '/' + productName), null);
+                                    itemElement.remove();
+                                    window.location.reload();
+                                    // Remove item element from the page
+                                });
+                            }
+                        }
+                        if (total > 0) {
+                            const totalElement = document.createElement('p');
+                            totalElement.textContent = 'Total: ₹' + total;
+                            totalElement.style.textAlign = 'center'; // Center-align the total
+                            totalElement.style.fontWeight = 'bold'; // Make the font bold
+                            totalElement.style.fontSize = '18px'; // Set the font size
+                            document.getElementById('cartContainer').appendChild(totalElement);
+
+
+                        }
+
+                        document.getElementById('loading').style.display = 'none';
+                        // Hide loading animation
+                        document.getElementById('checkoutButton').style.display = hasItems ? 'block' : 'none';
+                        document.getElementById('checkoutSection').style.display = hasItems ? 'block' : 'none';
+                        document.getElementById('emptyCart').style.display = hasItems ? 'none' : 'block';
+                        document.getElementById('cartContainer').style.display = 'block'; // Show cart container
+
+                    }
+                });
+            }
+        });
+        // Checkout function
+        async function checkout() {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    const ordersRef = ref(db, 'orders/' + user.uid);
+                    onValue(ordersRef, (snapshot) => {
+                        const orders = snapshot.val();
+                        let totalAmount = 0;
+                        let productNames = [];
+                        let productKeys = []; // Store the keys of the products
+                        let firstItemImageUrl = null;
+                        let firstItemAddress = null;
+                        for (const productName in orders) {
+                            if (orders[productName].orderStatus === 'incart') {
+                                totalAmount += orders[productName].totalAmount;
+                                productNames.push(orders[productName].itemName);
+                                productKeys.push(productName); // Store the key of the product
+                                // Store the image URL and address of the first item
+                                if (!firstItemImageUrl && orders[productName].pimg) {
+                                    firstItemImageUrl = orders[productName].pimg;
+                                }
+                                if (!firstItemAddress && orders[productName].customerAddress) {
+                                    firstItemAddress = orders[productName].customerAddress;
+                                }
+                            }
+                        }
+                        document.getElementById('cartContainer').style.display = 'none';
+                        document.getElementById('checkoutButton').style.display = 'none';
+                        // Disable the checkout button
+                        document.getElementById('checkoutButton').disabled = true;
+                        // Add your Razorpay payment process here
+                        var options = {
+                            "key": "rzp_test_INvD28gn10xYZN", // Replace with your Razorpay key
+                            "amount": totalAmount * 100, // Total amount of all products
+                            "currency": "INR",
+                            "name": productNames.join(', '), // All product names
+                            "description": "Make Payment To Proceed :)",
+                            "image": firstItemImageUrl || "", // Image URL of the first item
+                            "handler": function (response) {
+                                // Update the order status and payment ID in the database for each product
+                                for (const productKey of productKeys) {
+                                    update(ref(db, 'orders/' + user.uid + '/' + productKey), {
+                                        orderStatus: 'processing',
+                                        paymentId: response.razorpay_payment_id
+                                    });
+                                }
+
+
+                                //clear the local storage
+                                localStorage.clear();
+                                // Enable the checkout button
+                                document.getElementById('checkoutButton').disabled = false;
+                                // Set a flag in localStorage to indicate a successful transaction
+
+                                // Reload the page
+                                window.location.reload();
+
+
+
+                            },
+                            "modal": {
+                                "ondismiss": function () {
+                                    // Show the checkout button and cart container again if the transaction fails
+                                    document.getElementById('checkoutButton').style.display = 'block';
+                                    document.getElementById('cartContainer').style.display = 'block';
+                                    // Enable the checkout button
+                                    document.getElementById('checkoutButton').disabled = false;
+                                }
+                            },
+                            "prefill": {
+                                "name": user.displayName || user.uid, // Replace with the user's name
+                                "email": user.email || "", // Replace with the user's email
+                                "contact": user.phoneNumber || "9340800000" // Replace with the user's phone number
+                            },
+                            "notes": {
+                                "address": firstItemAddress || "India", // Address of the first item
+                            },
+                            "theme": {
+                                "color": "#F37254",
+                            }
+                        };
+
+                        var rzp1 = new Razorpay(options);
+                        rzp1.open();
+                    });
+                }
+            });
+        }
+
+        // Add event listener to the checkout button
+        document.getElementById('checkoutButton').addEventListener('click', async () => {
+            await checkout();
+
+            // You can add your Razorpay test function here
+        });
+    </script>
+
+</body>
+
+</html>

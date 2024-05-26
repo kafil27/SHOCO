@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Contact Us</title>
+  <!-- Include Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <!-- Include GSAP for animations -->
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.2/css/all.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+  <!-- Custom CSS -->
+  <style>
+    header {
+      background-color: black;
+      height: 80px;
+    }
+
+    header {
+      background-color: black;
+      height: 80px;
+    }
+
+    nav {
+      background-color: #000;
+      /* Black background */
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 50px;
+      /* Padding around */
+      align-items: center;
+
+    }
+
+    .nav-item a {
+      color: #fff;
+      /* White color icons */
+      text-decoration: none;
+      transition: all 0.3s ease;
+      /* Animation */
+    }
+
+    .nav-item a:hover {
+      color: #f3f04d;
+      /* Change the color to tomato on hover */
+    }
+
+
+
+
+    /* Cart Item Count */
+    .cart-item-count {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      font-size: 10px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background-color: transparent;
+      color: white;
+      text-align: center;
+    }
+
+    /* Logo */
+    .logo img {
+      transition: all 0.3s ease;
+      /* Animation */
+    }
+
+    .logo img:hover {
+      transform: scale(1.1);
+      /* Logo gets slightly bigger when hovered */
+    }
+
+    nav .list-item ul {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+      list-style: none;
+    }
+
+    .list-item ul li a {
+      color: white;
+      /* font-size: 16px; */
+      /* font-weight: bold; */
+      font-family: sans-serif;
+      text-decoration: none;
+    }
+
+    body {
+      background-color: #0000;
+      color: #000;
+    }
+
+    .btn-primary {
+      background-color: #008000;
+      border-color: #008000;
+    }
+
+    .social-icon {
+      width: 100px;
+      height: 100px;
+      transition: transform 0.5s;
+    }
+
+    .social-icon:hover {
+      transform: scale(1.1);
+    }
+
+    #simg {
+      border-radius: 15%;
+    }
+
+
+    /* Add your custom styles here */
+  </style>
+  <script type="module">
+    gsap.from(".img-fluid", { duration: 1, x: 300, opacity: 0, scale: 0.5 });
+
+    // Import Firebase modules
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
+    import { getDatabase, ref, onValue, set, get } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
+
+    // Initialize Firebase App
+    const firebaseConfig = {
+      apiKey: "AIzaSyBAROjb_hDFU7eOw_Es0oUkQSngnoL3M2k",
+      authDomain: "project-store-uni.firebaseapp.com",
+      projectId: "project-store-uni",
+      storageBucket: "project-store-uni.appspot.com",
+      messagingSenderId: "733337078593",
+      appId: "1:733337078593:web:ff198355dd0b192b952fc0",
+      measurementId: "G-RG7MSM6SST",
+      databaseURL: "https://project-store-uni-default-rtdb.firebaseio.com/"
+    };
+    initializeApp(firebaseConfig);
+
+    // Initialize Firebase Auth and Realtime Database
+    const auth = getAuth();
+    const db = getDatabase();
+
+
+    // Navbar elements
+    const navbarUserEmail = document.getElementById('userEmail');
+    const navbarCartCount = document.getElementById('cartItemCount');
+
+    // Listen for auth state changes
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        // User is signed in
+        const userId = user.uid;
+        const ordersRef = ref(db, `orders/${userId}`);
+
+        // Fetch the number of items in the cart
+        fetchCartItemCount(ordersRef).then(count => {
+          // Update the cart item count badge
+          navbarCartCount.textContent = count;
+        });
+
+        // Update the user email
+        navbarUserEmail.textContent = user.displayName || user.email;
+      } else {
+        // User is signed out
+        navbarUserEmail.textContent = 'guest';
+        navbarCartCount.textContent = '0';
+      }
+    });
+
+    // Fetch the number of items in the cart
+    function fetchCartItemCount(ordersRef) {
+      return get(ordersRef).then(snapshot => {
+        let count = 0;
+        snapshot.forEach(orderSnapshot => {
+          const order = orderSnapshot.val();
+          // Only count the order if its status is "incart"
+          if (order.orderStatus === 'incart') {
+            count++;
+          }
+        });
+        return count;
+      });
+    }
+
+  </script>
+</head>
+
+<body class="bg-dark text-light">
+  <header>
+    <nav>
+      <div class="logo">
+        <a href="index.html">
+          <img src="/res/images/Free Simple Modern Circle Design Studio Logo (3).png" alt="error" width="100px">
+        </a>
+      </div>
+      <div class="list-item">
+        <ul>
+          <li class="nav-item">
+            <a href="/res/pages/index.html"><i class="fa-solid fa-house"></i></a>
+          </li>
+          <li class="nav-item">
+            <a href="/res/pages/products.html"><i class="fa-brands fa-product-hunt"></i></a>
+          </li>
+          <li class="nav-item">
+            <a href="/res/pages/usersection.html"><i class="fa-solid fa-user"></i>
+              <span id="userEmail" class="username">guest</span>
+            </a>
+          </li>
+          <li class="nav-item cart-item ">
+            <a id="cartButton" href="/res/pages/cart.html" class="btn btn-dark cart-button">
+              <i class="fas fa-shopping-cart fa-lg">
+                <span id="cartItemCount" class="cart-item-count badge badge-dark">0</span>
+              </i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+  </header>
+  <div class="container">
+    <!-- Social Links -->
+    <div class="row justify-content-center my-5">
+      <!-- Replace '#' with your actual social media links -->
+      <div class="col-md-3 text-center">
+        <a href="https://www.instagram.com/_kafilkhan?igsh=YzU1NGVlODEzOA=="><img id="simg"
+            src="/res/images/insta gigle (1).gif" class="img-fluid social-icon"></a>
+      </div>
+      <div class="col-md-3 text-center">
+        <a href="mailto:kafilkhan1271@gmail.com?body=Hello%2C%20I%20am%20a%20Shoco%20User"><img id="simg"
+            src="/res/images/mail (1).gif" class="img-fluid social-icon"></a>
+      </div>
+      <!-- Add more columns for more social media links -->
+    </div>
+
+    <!-- Divider -->
+    <div class="row">
+      <div class="col">
+        <hr class="bg-light">
+      </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="row">
+      <div class="col-md-6">
+        <form>
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" id="name">
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email">
+          </div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea class="form-control" id="message" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Include Bootstrap JS and jQuery -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <!-- Custom JS -->
+  <script src="scripts.js"></script>
+</body>
+
+</html>

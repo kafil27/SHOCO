@@ -1,0 +1,149 @@
+header {
+  background-color: black;
+  height: 80px;
+}
+
+nav{
+ 
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px;
+
+}
+
+nav .list-item ul {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  list-style: none;
+}
+
+.list-item ul li a {
+  color: white;
+  /* font-size: 16px; */
+  /* font-weight: bold; */
+  font-family: sans-serif;
+  text-decoration: none;
+}
+.list-item ul li:after{
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 0%;
+  background-color:  #ffcf01;
+  transition: all ease 1s;
+}
+.list-item ul li:hover::after{
+  width: 100%;
+}
+.list-item {
+  position: static;
+}
+.list-item ul li{
+  /* background-color: red; */
+  position: relative;
+}
+#first-section {
+  background-color: black;
+  height: 90vh;
+  width: 22vw;
+
+}
+.user-info{
+  margin: auto;
+  max-width: 80%;
+  color: WHITE;
+}
+.first-main{
+  display: flex;
+}
+
+.user-info .list-item{
+  margin-top: 55px;
+  text-align: center;
+} 
+
+.second-section{
+  background: white;
+  width: 58vw;
+}
+
+.information{
+  font-size: 55px;
+}
+strong{
+  font-size: 35px;
+  margin-right: 60px;
+
+
+  
+}
+p{
+  margin: 22px 22px 22px 22px;
+}
+
+span{
+  font-size: 35px;
+  font-family: 'Courier New', Courier, monospace;
+
+}
+
+
+.account-details-container {
+
+    /* max-width: 400px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px; */
+    display: flex;
+  }
+
+
+  #first{
+    display: flex;
+    /* margin: 22px 76px; */
+    gap: 30px;
+
+  }
+  
+  
+  /* .user-info, .edit-user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  } */
+
+  .logout-section {
+    margin-top: 20px;
+    margin-left: 70px;
+}
+  
+  
+  .hidden {
+    display: none;
+  }
+  
+  button {
+    padding: 10px 20px;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+  
+  p{
+    margin-top: 6px;
+  }
+   h3 a{
+    color: white;
+    text-decoration: none;
+  }
+  h3 a:hover{
+    color: white;
+    text-decoration: none;
+  }
+  .list-item2{
+    text-align: center;
+  }
+ 

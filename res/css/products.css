@@ -1,0 +1,257 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Roboto+Slab:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Freeman&display=swap');
+
+@keyframes gradient {
+    0% {
+        background-position: 0%;
+    }
+
+    100% {
+        background-position: 100%;
+    }
+}
+
+.container, #productContainer {
+    opacity: 0; /* Initially hide content */
+    transition: opacity 0.5s ease; /* Add smooth transition */
+  }
+
+  .d-flex {
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+  }
+  
+  
+
+header {
+    background-color: black;
+    height: 80px;
+    display: flex;
+    justify-content: space-between;
+    
+    align-items: right;
+    /* This aligns content vertically within the header */
+    padding: 20px 50px;
+}
+
+nav {
+
+    background-color: #000;
+    display: flex;
+    /* Enables flexbox */
+    justify-content: space-between;
+    /* Adjust width as needed */
+        align-items: center;
+    
+
+    /* This aligns content vertically within the navigation */
+}
+
+.nav-items {
+    display: flex;
+    align-items:flex-end;
+    /* Enables styling navigation links with flexbox */
+    margin-left:auto;
+    /* Pushes nav-items to the right */
+    margin-right: auto;
+    /* Creates space between logo and nav-items (adjust as needed) */
+}
+
+
+nav ul {
+    display: inline-block;
+    max-height: 0px;
+    align-items:center;
+    align-self: flex-end;
+    align-content: center;
+    padding-left: 500px;
+    /* margin-left: 200px; */
+}
+
+nav ul li {
+    margin: auto;
+}
+
+
+
+
+.nav-item a {
+
+    color: #fff;
+    /* White color icons */
+    text-decoration: none;
+    transition: all 0.3s ease;
+    /* Animation */
+}
+
+.nav-item a:hover {
+    color: #f3f04d;
+    /* Change the color to tomato on hover */
+}
+
+
+
+
+/* Cart Item Count */
+.cart-item-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 10px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: transparent;
+    color: white;
+    text-align: center;
+}
+
+/* Logo */
+.logo img {
+    transition: all 0.3s ease;
+    /* Animation */
+}
+
+.logo img:hover {
+    transform: scale(1.1);
+    /* Logo gets slightly bigger when hovered */
+}
+
+nav .list-item ul {
+    display:flex;
+
+    gap: 30px;
+    align-items: left;
+    list-style: none;
+}
+
+.list-item ul li a {
+    color: white;
+    /* font-size: 16px; */
+    /* font-weight: bold; */
+    font-family: sans-serif;
+    text-decoration: none;
+}
+
+#simg {
+    width: 40%;
+    height: 40%;
+    align-content: center;
+    align-items: center;
+    margin: 10%;
+    align-self: center;
+    border-radius: 10%;
+}
+
+body {
+    background-color: white;
+}
+
+.card {
+    margin: 20px;
+    /* box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); */
+    transition: 0.3s;
+    border: none;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+    text-decoration: none;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+    position: absolute; 
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+* {
+    margin: 0%;
+    padding: 0%;
+}
+
+
+
+
+
+
+.header-list {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+}
+
+.list-item ul {
+    display: flex;
+    gap: 22px;
+    list-style-type: none;
+}
+
+/* .list-item ul li a {
+    list-style: none;
+    text-decoration: none;
+    /* color: black; */
+
+/* font-family: cursive; */
+
+.logo span {
+    color: black;
+    font-weight: bold;
+    font-size: 22px;
+    font-family: "Dancing Script", cursive;
+    font-optical-sizing: auto;
+    font-weight: bold;
+    font-style: normal;
+    font-size: 27px;
+    /* color: #ffffff; */
+    text-decoration: none;
+}
+
+.card-body {
+    text-align: center;
+    font-family: "Freeman", sans-serif;
+    height: 215px;
+    line-height: 30px;
+}
+
+.card-img-top {
+    height: 400px;
+}
+
+.card-body h5 {
+    color: black;
+    font: bold;
+    /* font-size: small; */
+
+    font-weight: 400;
+    font-style: normal;
+    font-size: 22px;
+}
+
+.card-body :nth-child(2) {
+    color: rgb(121, 116, 116);
+    font-size: small;
+    text-align: center;
+}
+
+.card-body :nth-child(8) {
+    color: rgb(121, 116, 116);
+    font-size: small;
+    gap: 22px;
+}
+
+.card-body :nth-child(9) {
+    color: green;
+}
+
+p {
+    margin: 0% !important;
+
+}

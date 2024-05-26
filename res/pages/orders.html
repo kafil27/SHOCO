@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Order Page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/res/css/orders.css">
+
+</head>
+
+<body>
+    <!-- header-section-end -->
+    <div class="spinner-border text-primary" role="status" id="loading">
+        <span class="sr-only">Loading...</span>
+    </div>
+    <div id="noOrders" class="center">
+        <img src="/res/images/noorders.jpg" alt="No Orders" class="no-orders-img">
+    </div>
+    <div id="ordersContainer" class="container mt-3 row">
+        <!-- Orders will be loaded here -->
+    </div>
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js';
+        import { getDatabase, ref, onValue, child, update } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js';
+
+        // Initialize Firebase App
+        const firebaseConfig = {
+            apiKey: "AIzaSyBAROjb_hDFU7eOw_Es0oUkQSngnoL3M2k",
+            authDomain: "project-store-uni.firebaseapp.com",
+            projectId: "project-store-uni",
+            storageBucket: "project-store-uni.appspot.com",
+            messagingSenderId: "733337078593",
+            appId: "1:733337078593:web:ff198355dd0b192b952fc0",
+            measurementId: "G-RG7MSM6SST",
+            databaseURL: "https://project-store-uni-default-rtdb.firebaseio.com/"
+        };
+        initializeApp(firebaseConfig);
+
+        // Get the current user's UID
+        const auth = getAuth();
+        // init realtime db
+        const db = getDatabase();
+
+
+
+        // Fetch user orders
+        function fetchOrders(ordersRef) {
+            return new Promise((resolve) => {
+                onValue(ordersRef, (snapshot) => {
+                    const orders = [];
+                    snapshot.forEach((orderSnapshot) => {
+                        const order = orderSnapshot.val();
+                        // Only add the order to the array if its status is not "in cart"
+                        if (order.orderStatus !== 'incart') {
+                            orders.push({ ...order, orderId: orderSnapshot.key });
+                        }
+                    });
+                    resolve(orders);
+                });
+            });
+        }
+
+        // Display orders
+        function displayOrders(orders) {
+            const ordersContainer = document.getElementById('ordersContainer');
+            ordersContainer.innerHTML = '';
+            // Clear existing content
+
+            if (orders.length === 0) {
+                console.log("No Items or Orders");
+            }
+
+            orders.forEach((order) => {
+                const orderCard = document.createElement('div');
+                orderCard.classList.add('order-card', 'col-md-4', 'mb-3', order.orderStatus); // Apply your CSS styles
+
+                // Populate orderCard with order details
+                orderCard.innerHTML = `
+            <div class="card h-100">
+                <img src="${order.pimg}" class="card-img-top" alt="${order.itemName}" style="width: 100%;">
+                <div class="card-body">
+                    <h5 class="card-title">${order.itemName}</h5>
+                    <p class="price">Item Price: ₹${order.totalAmount}</p>
+                    <p class="quantity">Item Quantity: <span class="quantity-value">${order.itemQuantity}</span></p>
+                    <p class="color">Item Color: <span class="color-value">${order.colors}</span></p>
+                    <p class="status">Order Status: ${order.orderStatus}</p>
+                    <p class="address">Shipping Address: <span class="address-value">${order.customerAddress}</span></p>
+                    <p class="customer-id">Customer ID: <span class="customer-id-value">${order.cid}</span></p>
+                    <!-- Add other order details as needed -->
+                    ${order.orderStatus === 'dispatched' ? '<button onclick="markAsShipped(\'' + order.orderId + '\')" class="btn btn-primary">Mark as Shipped</button>' : ''}
+                </div>
+            </div>
+        `;
+
+                ordersContainer.appendChild(orderCard);
+            });
+        }
+
+        // Mark order as shipped
+        window.markAsShipped = async function (orderId) {
+            const user = auth.currentUser;
+            if (user) {
+                const userId = user.uid;
+                const orderRef = ref(db, `orders/${userId}/${orderId}`);
+                await update(orderRef, { orderStatus: 'shipped' });
+                // Refresh the orders
+                fetchOrders(ref(db, `orders/${userId}`)).then(displayOrders);
+            }
+        }
+
+        onAuthStateChanged(getAuth(), (user) => {
+            if (user) {
+                const userId = user.uid;
+                const ordersRef = ref(db, `orders/${userId}`);
+
+                // Show loading element
+                document.getElementById('loading').style.display = 'block';
+                // Hide "No Orders" image
+                document.getElementById('noOrders').style.display = 'none';
+
+                fetchOrders(ordersRef).then((orders) => {
+                    // Hide loading element
+                    document.getElementById('loading').style.display = 'none';
+                    // If there are no orders, show "No Orders" image
+                    if (orders.length === 0) {
+                        document.getElementById('noOrders').style.display = 'block';
+                    }
+                    displayOrders(orders);
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

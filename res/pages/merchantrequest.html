@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Become a Merchant</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/res/css/merchant.css">
+</head>
+
+<body>
+
+    <script type="module">
+        const urlParams = new URLSearchParams(window.location.search);
+        const uid = urlParams.get('uid');
+        const email = urlParams.get('email');
+
+        if (uid && email) {
+            document.getElementById('userText').textContent = 'UID: ' + uid + ', Email: ' + email;
+        }
+
+    </script>
+    <!-- Your HTML content here -->
+
+    <div id="userInfo" class="position-absolute">
+        <i class="bi bi-person-circle"></i>
+        <span id="userText"></span>
+    </div>
+
+    <div class="container mt-5">
+        <h1 class="display-4 text-center">Become a Merchant</h1>
+        <p class="lead text-center">Join us and start selling your products on our platform.</p>
+        <div class="d-flex justify-content-center">
+            <a href="mailto:kafilkhan1271@gmail.com?subject=Merchant Request&body=I'm interested in becoming a seller and merchant on your site. I want to sell my high-quality shoes. My username is "
+                + uid + " and my email is " + email + ". Please provide me admin access."
+                class="btn btn-success btn-lg">Apply Now</a>
+        </div>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+
+</html>

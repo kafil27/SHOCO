@@ -1,0 +1,161 @@
+/* General Styles */
+/* General Styles */
+body,
+html {
+  height: 100%;
+  /* Adjusted darker gradient background */
+  background: linear-gradient(89.2deg, rgb(0, 0, 0) 10.4%, rgb(174, 174, 174) 37.1%, rgb(0, 0, 0) 64.3%, rgb(255, 255, 255) 90.5%);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+}
+ /* ... existing styles ... */
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+}
+
+/* Animation for eye icon */
+@keyframes eye-blink {
+  from { opacity: 1; }
+  to { opacity: 0.6; }
+}
+
+.password-toggle .fas {
+  animation: eye-blink 1s infinite alternate;
+}
+
+/* ... existing styles ... */
+
+/* Logo Styles */
+.logo {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 100px;
+  /* Adjust as needed */
+}
+
+/* Form Container Styles */
+.form-container {
+  background-color: #f6f7fb;
+  border-radius: 20px;
+  /* Rounded corners */ 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Mode Styles */
+.dark-mode {
+  background-color: #262626;
+  color: #f6f7fb;
+}
+
+.dark-mode .form-container {
+  background-color: #333;
+}
+
+
+
+/* Toggle Dark Mode Button */
+#dark-mode-toggle {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #ff8c00;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+
+
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Bootstrap Overrides */
+.container {
+  max-width: 900px;
+}
+
+/* Form Styles */
+.form-container {
+  background-color: #f6f7fb;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.input-field {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.input-field i {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #333;
+}
+
+.input-field input {
+  width: 100%;
+  padding: 10px 10px 10px 30px;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+}
+
+.btn {
+  border-radius: 20px;
+  padding: 10px 30px;
+  font-size: 16px;
+}
+
+.btn-primary {
+  background-color: #000000;
+  border: none;
+}
+.btn-primary:hover{
+  background-color: white;
+  color: rgb(0, 0, 0);
+  border: 2px solid black;
+}
+.btn-success:hover{
+  background-color: white;
+  color: rgb(0, 0, 0);
+  border: 2px solid black;
+}
+.btn-success {
+  background-color: #000000;
+  border: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column;
+  }
+
+  .col-md-6 {
+    margin-bottom: 20px;
+  }
+}
